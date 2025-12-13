@@ -24,6 +24,7 @@
   position: relative;
   border: 2px solid transparent;
   transition: all 0.4s ease;
+  min-height: 70px;
 
   &::before {
     content: '';
@@ -33,11 +34,11 @@
     padding: 2px;
     background: linear-gradient(
       90deg,
-      var(--color-accent),
-      var(--color-secondary),
-      var(--color-accent2),
-      var(--color-secondary2),
-      var(--color-accent)
+      rgba(255, 79, 31, 0.5),
+      rgba(0, 212, 255, 0.5),
+      rgba(255, 79, 31, 0.4),
+      rgba(0, 212, 255, 0.4),
+      rgba(255, 79, 31, 0.5)
     );
     background-size: 200% 100%;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -51,7 +52,7 @@
   &.scrolled {
     border: 2px solid transparent;
     background: var(--color-surface);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 
     &::before {
       opacity: 1;
@@ -77,16 +78,40 @@
 }
 
 .logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  z-index: 1001;
+  text-decoration: none;
+}
+
+.logoText {
   font-size: 1.75rem;
   font-family: var(--font-header);
   color: var(--color-accent);
   letter-spacing: 0.05em;
   font-weight: 700;
   white-space: nowrap;
-  z-index: 1001;
+  line-height: 1;
 
   @media (max-width: 768px) {
     font-size: 1.5rem;
+  }
+}
+
+.logoAffiliate {
+  font-size: 0.65rem;
+  font-family: var(--font-body);
+  color: var(--color-secondary);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: -0.15rem;
+  opacity: 0.9;
+
+  @media (max-width: 768px) {
+    font-size: 0.6rem;
   }
 }
 
@@ -130,8 +155,12 @@
 
 .links {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
+  flex: 1;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 500px;
 
   a {
     @include header;
@@ -150,6 +179,7 @@
     padding: 0.5rem 1.25rem;
     border-radius: 2rem;
     font-weight: 600;
+    font-size: 1rem;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
 
@@ -168,7 +198,8 @@
     bottom: 0;
     background: var(--color-surface);
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-top: 6rem;
     gap: 2rem;
     transform: translateX(-100%);
     opacity: 0;
@@ -184,113 +215,115 @@
       font-size: 1.5rem;
       text-align: center;
     }
+
+    .wodLink {
+      font-size: 1.5rem;
+      width: auto;
+    }
   }
 }
 
 .actions {
-  display: flex;
-  gap: 1rem;
+  display: none; // Hidden on mobile by default, shown when menu is open
+  gap: 0.75rem;
   align-items: center;
 
-  button {
+  @media (min-width: 769px) {
+    display: flex; // Always visible on desktop
+    position: absolute;
+    right: 2rem;
+  }
+
+  .signInButton {
     @include header;
-    padding: 0.75rem 1.5rem;
+    padding: 0.625rem 1.25rem;
     border-radius: 8px;
-    border: 2px solid var(--color-accent);
+    border: 2px solid var(--color-secondary);
     background: transparent;
-    color: var(--color-accent);
+    color: var(--color-secondary);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
     white-space: nowrap;
 
     &:hover {
-      background: var(--color-accent);
-      color: white;
+      background: rgba(0, 212, 255, 0.1);
+      border-color: var(--color-secondary2);
+      color: var(--color-secondary2);
     }
+  }
 
-    &:last-child {
-      background: var(--color-accent);
-      color: white;
+  .joinButton {
+    @include header;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    border: 2px solid var(--color-accent);
+    background: var(--color-accent);
+    color: white;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 
-      &:hover {
-        background: var(--color-accent2);
-        border-color: var(--color-accent2);
-      }
+    &:hover {
+      background: var(--color-accent2);
+      border-color: var(--color-accent2);
+      transform: translateY(-1px);
     }
   }
 
   .dashboardLink {
     @include header;
-    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.65rem;
     border-radius: 8px;
-    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary2) 100%);
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
     color: var(--color-text);
-    font-size: 1rem;
-    font-weight: 600;
     transition: all 0.2s ease;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 
     &:hover {
       color: var(--color-text);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 229, 255, 0.5);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+      background: linear-gradient(135deg, #9F7AEA 0%, #7C3AED 100%);
     }
   }
 
-  .userName {
-    @include body;
-    color: var(--color-text);
-    font-size: 0.95rem;
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    white-space: nowrap;
+  .dashboardIcon {
+    font-size: 1.3rem;
+    line-height: 1;
   }
 
   @media (max-width: 768px) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--color-surface);
-    flex-direction: column;
-    justify-content: center;
-    gap: 1.5rem;
-    transform: translateX(-100%);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    z-index: 998;
-    padding: 2rem;
+    position: relative;
+    width: auto;
+    order: 3;
+    margin-top: 1.5rem;
 
     &.actionsOpen {
-      transform: translateX(0);
-      opacity: 1;
+      display: flex;
     }
 
-    button {
-      width: 100%;
-      max-width: 300px;
-      padding: 1rem 2rem;
-      font-size: 1.25rem;
+    .signInButton,
+    .joinButton {
+      flex: 1;
+      padding: 0.875rem 1.5rem;
+      font-size: 1.125rem;
     }
 
     .dashboardLink {
-      width: 100%;
-      max-width: 300px;
-      padding: 1rem 2rem;
-      font-size: 1.25rem;
+      padding: 0.5rem 1.25rem;
       text-align: center;
+      border-radius: 2rem;
+      width: auto;
     }
 
-    .userName {
-      width: 100%;
-      max-width: 300px;
-      padding: 1rem 2rem;
-      font-size: 1.25rem;
-      text-align: center;
+    .dashboardIcon {
+      font-size: 1.8rem;
     }
   }
 }

@@ -52,7 +52,8 @@ const Navbar: React.FC = () => {
     <div className={styles.navbarContainer}>
       <nav className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}>
         <Link to="/" className={styles.logo} onClick={closeMenu}>
-          CrossFit Comet
+          <div className={styles.logoText}>CrossFit Comet</div>
+          <div className={styles.logoAffiliate}>Affiliate</div>
         </Link>
 
         {/* Hamburger Button */}
@@ -73,23 +74,20 @@ const Navbar: React.FC = () => {
           <a href="/coaches" onClick={closeMenu}>Coaches</a>
           <Link to="/schedule" onClick={closeMenu}>Schedule</Link>
           <a href="/#wod" className={styles.wodLink} onClick={closeMenu}>Today's WOD</a>
-        </div>
 
-        {/* Action Buttons */}
-        <div className={`${styles.actions} ${isMenuOpen ? styles.actionsOpen : ''}`}>
-          {isAuthenticated ? (
-            <>
-              <Link to="/dashboard" className={styles.dashboardLink} onClick={closeMenu}>
-                Dashboard
+          {/* Action Buttons - shown in mobile menu */}
+          <div className={`${styles.actions} ${isMenuOpen ? styles.actionsOpen : ''}`}>
+            {isAuthenticated ? (
+              <Link to="/dashboard" className={styles.dashboardLink} onClick={closeMenu} title="Dashboard">
+                <span className={styles.dashboardIcon}>⚡</span>
               </Link>
-              <span className={styles.userName}>{user?.name}</span>
-            </>
-          ) : (
-            <>
-              <button onClick={openAuthModal}>Sign In</button>
-              <button onClick={openTrialModal}>Join</button>
-            </>
-          )}
+            ) : (
+              <>
+                <button className={styles.signInButton} onClick={openAuthModal}>Sign In</button>
+                <button className={styles.joinButton} onClick={openTrialModal}>Join</button>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 
