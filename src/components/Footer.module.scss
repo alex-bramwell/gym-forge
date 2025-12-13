@@ -2,11 +2,40 @@
   background: var(--color-surface);
   color: var(--color-footer);
   padding: 2rem 1rem;
-  border-top: 2px solid var(--color-accent);
+  border-top: 2px solid transparent;
   text-align: center;
   font-size: 1rem;
   font-family: var(--font-body);
   letter-spacing: 0.05em;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 79, 31, 0.4),
+      rgba(0, 212, 255, 0.4),
+      rgba(255, 79, 31, 0.3),
+      rgba(0, 212, 255, 0.3),
+      rgba(255, 79, 31, 0.4)
+    );
+    background-size: 200% 100%;
+    animation: footerBorderGlisten 5s linear infinite;
+  }
+}
+
+@keyframes footerBorderGlisten {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
 }
 .links {
   margin-bottom: 1rem;

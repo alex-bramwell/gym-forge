@@ -8,6 +8,9 @@ const Hero = () => {
 
   return (
     <Section spacing="xlarge" background="dark" className={styles.hero}>
+      <div className={styles.comet}>
+        <div className={styles.cometTrail}></div>
+      </div>
       <Container>
         <div className={styles.content}>
           <h1 className={styles.title}>

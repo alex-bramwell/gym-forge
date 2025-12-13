@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { TrialModal } from './TrialModal';
@@ -10,6 +10,17 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTrialModalOpen, setIsTrialModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -39,7 +50,7 @@ const Navbar: React.FC = () => {
 
   return (
     <div className={styles.navbarContainer}>
-      <nav className={styles.navbar}>
+      <nav className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}>
         <Link to="/" className={styles.logo} onClick={closeMenu}>
           CrossFit Comet
         </Link>
