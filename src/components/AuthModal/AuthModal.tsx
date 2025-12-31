@@ -8,9 +8,10 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'login' | 'signup' | 'reset';
+  embedded?: boolean;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login', embedded = false }) => {
   const { login, signup, resetPassword, loginWithOAuth } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup' | 'reset'>(initialMode);
   const [email, setEmail] = useState('');
@@ -204,9 +205,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     }
   };
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className={styles.content}>
+  const content = (
+    <div className={styles.content}>
         <div className={styles.header}>
           <h2 className={styles.title}>
             {mode === 'login' && 'Welcome Back'}
@@ -472,6 +472,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           )}
         </div>
       </div>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      {content}
     </Modal>
   );
 };

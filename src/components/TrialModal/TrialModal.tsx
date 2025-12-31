@@ -9,22 +9,54 @@ interface TrialModalProps {
 }
 
 const TrialModal: React.FC<TrialModalProps> = ({ isOpen, onClose }) => {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
 
   const handleCreateAccount = () => {
-    setIsAuthModalOpen(true);
-    onClose();
+    setAuthMode('signup');
+    setStep(2);
   };
 
   const handleSignIn = () => {
-    setIsAuthModalOpen(true);
+    setAuthMode('login');
+    setStep(2);
+  };
+
+  const handleBack = () => {
+    setStep(1);
+  };
+
+  const resetModal = () => {
+    setStep(1);
+    setAuthMode('signup');
+  };
+
+  const handleClose = () => {
+    resetModal();
+    onClose();
+  };
+
+  const handleAuthSuccess = () => {
+    resetModal();
     onClose();
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
+      {step === 1 ? (
         <div className={styles.content}>
+          <div className={styles.stepIndicator}>
+            <div className={`${styles.step} ${styles.active}`}>
+              <span className={styles.stepNumber}>1</span>
+              <span className={styles.stepLabel}>What's Included</span>
+            </div>
+            <div className={styles.stepDivider} />
+            <div className={styles.step}>
+              <span className={styles.stepNumber}>2</span>
+              <span className={styles.stepLabel}>Create Account</span>
+            </div>
+          </div>
+
           <h2 className={styles.title}>Start Your Free Trial</h2>
           <p className={styles.subtitle}>
             Experience the CrossFit Comet difference with no commitment
@@ -75,7 +107,7 @@ const TrialModal: React.FC<TrialModalProps> = ({ isOpen, onClose }) => {
               fullWidth
               onClick={handleCreateAccount}
             >
-              Create Account to Book
+              Continue to Create Account
             </Button>
             <p className={styles.note}>
               Already have an account?{' '}
@@ -85,14 +117,31 @@ const TrialModal: React.FC<TrialModalProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
         </div>
-      </Modal>
+      ) : (
+        <div className={styles.content}>
+          <div className={styles.stepIndicator}>
+            <button className={`${styles.step} ${styles.clickable}`} onClick={handleBack}>
+              <span className={styles.stepNumber}>1</span>
+              <span className={styles.stepLabel}>What's Included</span>
+            </button>
+            <div className={styles.stepDivider} />
+            <div className={`${styles.step} ${styles.active}`}>
+              <span className={styles.stepNumber}>2</span>
+              <span className={styles.stepLabel}>{authMode === 'signup' ? 'Create Account' : 'Sign In'}</span>
+            </div>
+          </div>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode="signup"
-      />
-    </>
+          <div className={styles.authContainer}>
+            <AuthModal
+              isOpen={true}
+              onClose={handleAuthSuccess}
+              initialMode={authMode}
+              embedded={true}
+            />
+          </div>
+        </div>
+      )}
+    </Modal>
   );
 };
 
