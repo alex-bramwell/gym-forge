@@ -232,21 +232,17 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(13, 13, 13, 0.95);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgb(13, 13, 13);
     flex-direction: column;
     justify-content: flex-start;
     padding-top: 6rem;
     gap: 2rem;
     transform: translateX(-100%);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.3s ease;
     z-index: 999;
 
     &.linksOpen {
       transform: translateX(0);
-      opacity: 1;
     }
 
     a {
