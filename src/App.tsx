@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { useSessionTimeout } from './hooks/useSessionTimeout';
 import Layout from './components/Layout';
@@ -13,6 +13,27 @@ import Dashboard from './pages/Dashboard';
 import EmailVerified from './pages/EmailVerified';
 import ResetPassword from './pages/ResetPassword';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Component to detect password recovery tokens and redirect
+function PasswordRecoveryRedirect() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if there's a password recovery token in the URL hash
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    const accessToken = hashParams.get('access_token');
+
+    // If we have a recovery token and we're not already on the reset password page
+    if (type === 'recovery' && accessToken && location.pathname !== '/reset-password') {
+      // Redirect to reset password page with the hash intact
+      navigate('/reset-password' + window.location.hash, { replace: true });
+    }
+  }, [navigate, location]);
+
+  return null;
+}
 
 function AppContent() {
   const { logout } = useAuth();
@@ -38,6 +59,7 @@ function AppContent() {
   return (
     <>
       <BrowserRouter>
+        <PasswordRecoveryRedirect />
         <ScrollToHash />
         <Layout>
           <Routes>
