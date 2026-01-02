@@ -5,7 +5,7 @@ import { AuthModal } from './AuthModal';
 import styles from './Navbar.module.scss';
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
   const [authModalInitialError, setAuthModalInitialError] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,6 +87,33 @@ const Navbar: React.FC = () => {
     setAuthModalInitialError('');
   };
 
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const closeUserDropdown = () => {
+    setIsUserDropdownOpen(false);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (isUserDropdownOpen && !target.closest(`.${styles.userMenu}`)) {
+        closeUserDropdown();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isUserDropdownOpen]);
+
+  // Get user's first name
+  const getFirstName = () => {
+    if (!user?.name) return 'User';
+    return user.name.split(' ')[0];
+  };
+
   return (
     <div className={styles.navbarContainer}>
       <nav className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}>
@@ -146,14 +174,36 @@ const Navbar: React.FC = () => {
           {/* Action Buttons - shown in mobile menu */}
           <div className={`${styles.actions} ${isMenuOpen ? styles.actionsOpen : ''}`}>
             {isAuthenticated ? (
-              <Link
-                to="/dashboard"
-                className={`${styles.dashboardLink} ${location.pathname === '/dashboard' ? styles.activeLink : ''}`}
-                onClick={closeMenu}
-                title="Dashboard"
-              >
-                <span className={styles.dashboardIcon}>⚡</span>
-              </Link>
+              <div className={styles.userMenu}>
+                <button
+                  className={`${styles.userButton} ${location.pathname === '/dashboard' ? styles.activeLink : ''}`}
+                  onClick={toggleUserDropdown}
+                  aria-label="User menu"
+                >
+                  <span className={styles.userName}>{getFirstName()}</span>
+                  <svg className={styles.dropdownIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                {isUserDropdownOpen && (
+                  <div className={styles.userDropdown}>
+                    <Link
+                      to="/dashboard"
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        closeUserDropdown();
+                        closeMenu();
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                      </svg>
+                      Dashboard
+                    </Link>
+                  </div>
+                )}
+              </div>
             ) : (
               <button className={styles.signInButton} onClick={openAuthModal}>Sign In</button>
             )}
