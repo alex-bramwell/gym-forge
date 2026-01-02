@@ -282,21 +282,43 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           <div className={styles.completionStep}>
             <div className={styles.stepText}>
               <h4>
-                <span className={changePasswordStep > 1 ? `${styles.stepNumber} ${styles.completed}` : styles.stepNumber}>
-                  {changePasswordStep > 1 ? '✓' : '1'}
+                <span className={`${styles.stepNumber} ${styles.completed}`}>
+                  ✓
                 </span>
-                Email Verified
+                Check your email
               </h4>
-              <p>You clicked the link from your email successfully</p>
+              <p>Look for a password reset email from CrossFit Comet</p>
+            </div>
+          </div>
+          <div className={styles.completionStep}>
+            <div className={styles.stepText}>
+              <h4>
+                <span className={`${styles.stepNumber} ${styles.completed}`}>
+                  ✓
+                </span>
+                Click the reset link
+              </h4>
+              <p>Follow the secure link to create a new password</p>
+            </div>
+          </div>
+          <div className={styles.completionStep}>
+            <div className={styles.stepText}>
+              <h4>
+                <span className={changePasswordStep === 1 ? styles.stepNumber : `${styles.stepNumber} ${styles.completed}`}>
+                  {changePasswordStep === 1 ? '3' : '✓'}
+                </span>
+                Verify your identity
+              </h4>
+              <p>Confirm your email has been verified</p>
             </div>
           </div>
           <div className={styles.completionStep}>
             <div className={styles.stepText}>
               <h4>
                 <span className={changePasswordStep === 2 ? styles.stepNumber : `${styles.stepNumber} ${styles.inactive}`}>
-                  2
+                  4
                 </span>
-                Create New Password
+                Create new password
               </h4>
               <p>Set a strong, secure password for your account</p>
             </div>
