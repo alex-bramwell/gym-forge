@@ -287,9 +287,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
               size="large"
               fullWidth
               onClick={() => setChangePasswordStep(2)}
-              isLoading={isLoading}
+              disabled={isLoading}
             >
-              Continue
+              {isLoading ? 'Loading...' : 'Continue'}
             </Button>
           </div>
         ) : (
@@ -387,10 +387,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
               variant="primary"
               size="large"
               fullWidth
-              isLoading={isLoading}
-              disabled={!isPasswordValid || (passwordCompromised?.compromised ?? false)}
+              disabled={isLoading || !isPasswordValid || (passwordCompromised?.compromised ?? false)}
             >
-              Update Password
+              {isLoading ? 'Updating...' : 'Update Password'}
             </Button>
           </form>
         )}
