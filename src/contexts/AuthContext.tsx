@@ -21,6 +21,7 @@ interface AuthContextType {
   signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  changePassword: (newPassword: string) => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<void>;
   loginWithOAuth: (provider: 'google' | 'facebook') => Promise<void>;
   resendVerificationEmail: (email: string) => Promise<void>;
@@ -172,6 +173,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     if (error) {
+      // Provide better error message for rate limiting
+      if (error.message.includes('429') || error.message.toLowerCase().includes('rate limit')) {
+        throw new Error('Too many password reset requests. Please wait 1 hour before trying again.');
+      }
+      throw new Error(error.message);
+    }
+  };
+
+  const changePassword = async (newPassword: string) => {
+    if (!user) {
+      throw new Error('No user logged in');
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      // Provide better error message for rate limiting
+      if (error.message.includes('429') || error.message.toLowerCase().includes('rate limit')) {
+        throw new Error('Too many password change requests. Please wait a moment and try again.');
+      }
       throw new Error(error.message);
     }
   };
@@ -236,6 +259,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signup,
     logout,
     resetPassword,
+    changePassword,
     updateProfile,
     loginWithOAuth,
     resendVerificationEmail,

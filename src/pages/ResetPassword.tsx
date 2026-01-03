@@ -51,26 +51,29 @@ const ResetPassword = () => {
 
   useEffect(() => {
     // Check if this is a valid password reset link
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get('access_token');
-    const type = hashParams.get('type');
+    const checkResetToken = () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const type = hashParams.get('type');
 
-    // Log for debugging (remove in production)
-    console.log('Reset password page loaded');
-    console.log('Hash params:', Object.fromEntries(hashParams.entries()));
-    console.log('Access token present:', !!accessToken);
-    console.log('Type:', type);
+      // Only show error if we're sure there's no recovery session
+      if (type && type !== 'recovery') {
+        setError('This link is not for password recovery. Please use the correct reset link from your email.');
+      } else if (!accessToken && !type) {
+        // No hash params at all - user navigated directly
+        setError('Please use the password reset link from your email to access this page.');
+      } else if (type === 'recovery' && !accessToken) {
+        setError('Invalid or expired password reset link. Please request a new one.');
+      }
+      // If type is 'recovery' and accessToken exists, we're good - let user reset password
+    };
 
-    // Only show error if we're sure there's no recovery session
-    if (type && type !== 'recovery') {
-      setError('This link is not for password recovery. Please use the correct reset link from your email.');
-    } else if (!accessToken && !type) {
-      // No hash params at all - user navigated directly
-      setError('Please use the password reset link from your email to access this page.');
-    } else if (type === 'recovery' && !accessToken) {
-      setError('Invalid or expired password reset link. Please request a new one.');
-    }
-    // If type is 'recovery' and accessToken exists, we're good - let user reset password
+    // Check immediately
+    checkResetToken();
+
+    // Also check when hash changes (in case of redirect)
+    window.addEventListener('hashchange', checkResetToken);
+    return () => window.removeEventListener('hashchange', checkResetToken);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -285,6 +288,14 @@ const ResetPassword = () => {
                         <span className={styles.checkmark}>{passwordRequirements.hasSpecial ? '✓' : '✗'}</span>
                         <span>One special character</span>
                       </div>
+                    </div>
+                    <div className={styles.passwordTip}>
+                      <svg className={styles.tipIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18h6" />
+                        <path d="M10 22h4" />
+                        <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
+                      </svg>
+                      <span>Tip: Use your browser's password manager to generate a strong password for easier sign in</span>
                     </div>
                   </div>
                 )}
