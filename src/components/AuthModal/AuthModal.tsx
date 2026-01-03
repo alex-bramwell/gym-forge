@@ -166,11 +166,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           );
         }
 
+        console.log('Attempting to update password...');
         const { error: updateError } = await supabase.auth.updateUser({
           password: password,
         });
 
+        console.log('Update result:', { error: updateError });
+
         if (updateError) {
+          console.error('Password update error:', updateError);
           // Provide better error message for rate limiting
           if (updateError.message.includes('429') || updateError.message.toLowerCase().includes('rate limit')) {
             throw new Error('Too many password update requests. Please wait a moment and try again.');
@@ -179,8 +183,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         }
 
         // Success - show completion message and redirect
+        console.log('Password updated successfully!');
         setSuccess('Password updated successfully! Redirecting to sign in...');
+        setIsLoading(false); // Reset loading state immediately
         setTimeout(() => {
+          console.log('Redirecting to sign in...');
           onClose();
           setMode('login');
           setPassword('');
