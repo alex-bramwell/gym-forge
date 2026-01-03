@@ -40,15 +40,13 @@ function PasswordRecoveryRedirect() {
     }
 
     // If we have a recovery token, redirect to home with a flag to open the password change modal
-    if (type === 'recovery' && accessToken) {
+    // Only redirect if we're not already on the password-reset page
+    if (type === 'recovery' && accessToken && !location.search.includes('password-reset=true')) {
       console.log('Detected recovery token, redirecting to password-reset=true');
       // Navigate to home with password-reset query param and preserve the hash
-      const currentPath = location.pathname + location.search;
-      if (!currentPath.includes('password-reset=true')) {
-        const newUrl = '/?password-reset=true' + window.location.hash;
-        console.log('Navigating to:', newUrl);
-        navigate(newUrl, { replace: true });
-      }
+      const newUrl = '/?password-reset=true' + window.location.hash;
+      console.log('Navigating to:', newUrl);
+      navigate(newUrl, { replace: true });
     }
   }, [navigate, location]);
 
