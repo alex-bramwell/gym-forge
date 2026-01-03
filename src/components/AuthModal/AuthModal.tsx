@@ -167,6 +167,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         }
 
         console.log('Attempting to update password...');
+
+        // First, verify we have a valid session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log('Current session:', { hasSession: !!session, sessionError });
+
+        if (!session) {
+          throw new Error('No active session found. Please try using the password reset link again.');
+        }
+
         const { error: updateError } = await supabase.auth.updateUser({
           password: password,
         });
