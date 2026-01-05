@@ -15,7 +15,7 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login', initialError = '', embedded = false }) => {
-  const { login, signup, resetPassword, loginWithOAuth, isAuthenticated, user } = useAuth();
+  const { signup, resetPassword, loginWithOAuth, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup' | 'reset' | 'changePassword'>(initialMode);
   const [email, setEmail] = useState('');
@@ -77,17 +77,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
       setError(initialError);
     }
   }, [initialError]);
-
-  // Close modal when user becomes authenticated during login
-  useEffect(() => {
-    if (mode === 'login' && isAuthenticated && isLoading) {
-      console.log('User authenticated during login - closing modal');
-      setIsLoading(false);
-      setEmail('');
-      setPassword('');
-      onClose();
-    }
-  }, [isAuthenticated, mode, isLoading, onClose]);
 
   const passwordRequirements = (mode === 'signup' || mode === 'changePassword') ? validatePassword(password) : null;
   const isPasswordValid = passwordRequirements
@@ -290,34 +279,49 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           throw new Error('Please fill in all required fields');
         }
         
-        // Don't await - let onAuthStateChange handle the state update
-        login(email, password).then(() => {
+        // Use direct API call to avoid SDK hanging
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+        const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseKey,
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.error) {
+          throw new Error(result.error_description || result.error || 'Invalid email or password');
+        }
+
+        // Set session using the tokens we got
+        if (result.access_token && result.refresh_token) {
+          // Store in localStorage for Supabase to pick up
+          const storageKey = `sb-${supabaseUrl.split('//')[1].split('.')[0]}-auth-token`;
+          localStorage.setItem(storageKey, JSON.stringify({
+            access_token: result.access_token,
+            refresh_token: result.refresh_token,
+            expires_at: result.expires_at,
+            expires_in: result.expires_in,
+            token_type: result.token_type,
+            user: result.user,
+          }));
+          
           setEmail('');
           setPassword('');
           setFailedAttempts(0);
           onClose();
-        }).catch(err => {
-          setError(err instanceof Error ? err.message : 'An error occurred');
-          // Rate limiting logic for failed login attempts
-          const newFailedAttempts = failedAttempts + 1;
-          setFailedAttempts(newFailedAttempts);
           
-          if (newFailedAttempts >= 5) {
-            setIsRateLimited(true);
-            setError('Too many failed attempts. Please wait 5 minutes before trying again.');
-            setTimeout(() => {
-              setIsRateLimited(false);
-              setFailedAttempts(0);
-            }, 300000);
-          }
-          setIsLoading(false);
-        });
-        
-        // Set a timeout to close modal if login succeeds via auth state change
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 5000);
-        return; // Don't run finally block
+          // Reload to pick up the session
+          window.location.reload();
+        }
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
