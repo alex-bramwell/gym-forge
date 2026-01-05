@@ -267,6 +267,7 @@ const Navbar: React.FC = () => {
                       closeMenu();
                       try {
                         await logout();
+                        window.location.href = '/';
                       } catch (error) {
                         console.error('Logout failed:', error);
                       }
@@ -404,6 +405,7 @@ const Navbar: React.FC = () => {
                     closeMenu();
                     try {
                       await logout();
+                      window.location.href = '/';
                     } catch (error) {
                       console.error('Logout failed:', error);
                     }
