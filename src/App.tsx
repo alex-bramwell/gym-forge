@@ -46,12 +46,19 @@ function PasswordRecoveryRedirect() {
       return;
     }
 
-    // If we have a recovery token, just redirect to home and let Supabase process it
-    // The PASSWORD_RECOVERY event will be fired by Supabase which the Navbar will detect
-    if (type === 'recovery' && accessToken && location.pathname !== '/') {
-      console.log('Detected recovery token, redirecting to home');
+    // If we have a recovery token and we're on the reset-password page, stay there
+    // The ResetPassword page has its own form to handle the password update
+    if (type === 'recovery' && accessToken && location.pathname === '/reset-password') {
+      console.log('On reset-password page with valid token - staying here');
+      return;
+    }
+
+    // If we have a recovery token on any other page, redirect to reset-password with the hash preserved
+    if (type === 'recovery' && accessToken && location.pathname !== '/reset-password') {
+      console.log('Detected recovery token on wrong page, redirecting to reset-password');
       hasRedirected.current = true;
-      navigate('/', { replace: true });
+      // Preserve the hash when redirecting
+      window.location.href = '/reset-password' + window.location.hash;
     }
   }, [navigate, location]);
 

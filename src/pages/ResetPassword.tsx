@@ -48,32 +48,84 @@ const ResetPassword = () => {
   };
 
   const passwordStrength = calculatePasswordStrength(password);
+  const [isSessionReady, setIsSessionReady] = useState(false);
 
   useEffect(() => {
-    // Check if this is a valid password reset link
-    const checkResetToken = () => {
+    // Check if this is a valid password reset link and wait for Supabase to process it
+    const checkResetToken = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = hashParams.get('access_token');
       const type = hashParams.get('type');
 
+      console.log('ResetPassword: checking token', { type, hasToken: !!accessToken });
+
       // Only show error if we're sure there's no recovery session
       if (type && type !== 'recovery') {
         setError('This link is not for password recovery. Please use the correct reset link from your email.');
+        return;
       } else if (!accessToken && !type) {
+        // No hash params - check if we already have a session from a previous token
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          console.log('ResetPassword: Found existing session');
+          setIsSessionReady(true);
+          return;
+        }
         // No hash params at all - user navigated directly
         setError('Please use the password reset link from your email to access this page.');
+        return;
       } else if (type === 'recovery' && !accessToken) {
         setError('Invalid or expired password reset link. Please request a new one.');
+        return;
       }
-      // If type is 'recovery' and accessToken exists, we're good - let user reset password
+
+      // If type is 'recovery' and accessToken exists, Supabase will automatically
+      // process the hash and set up the session. We need to wait for that.
+      console.log('ResetPassword: Waiting for Supabase to process recovery token...');
+      
+      // Give Supabase a moment to process the hash
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('ResetPassword: Session after processing', { hasSession: !!session });
+      
+      if (session) {
+        setIsSessionReady(true);
+      } else {
+        // Try listening for the auth state change
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          console.log('ResetPassword: Auth state changed', { event, hasSession: !!session });
+          if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
+            setIsSessionReady(true);
+            subscription.unsubscribe();
+          }
+        });
+
+        // Cleanup after 10 seconds if nothing happens
+        setTimeout(() => {
+          subscription.unsubscribe();
+          if (!isSessionReady) {
+            setError('Unable to verify your reset link. It may have expired. Please request a new one.');
+          }
+        }, 10000);
+      }
     };
 
-    // Check immediately
     checkResetToken();
+  }, []);
 
-    // Also check when hash changes (in case of redirect)
-    window.addEventListener('hashchange', checkResetToken);
-    return () => window.removeEventListener('hashchange', checkResetToken);
+  useEffect(() => {
+    // Also listen for hash changes (in case of redirect)
+    const handleHashChange = () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      if (hashParams.get('type') === 'recovery' && hashParams.get('access_token')) {
+        // Re-run the check
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,7 +175,30 @@ const ResetPassword = () => {
   const hashParams = new URLSearchParams(window.location.hash.substring(1));
   const hasValidToken = hashParams.get('type') === 'recovery' && hashParams.get('access_token');
 
-  if (!hasValidToken && error) {
+  // Show loading state while waiting for session
+  if ((hasValidToken || !error) && !isSessionReady && !error) {
+    return (
+      <Section spacing="large" background="default">
+        <Container>
+          <div className={styles.container}>
+            <div className={styles.content}>
+              <div className={styles.header}>
+                <h1 className={styles.title}>Reset Your Password</h1>
+                <p className={styles.subtitle}>
+                  Verifying your reset link...
+                </p>
+              </div>
+              <div className={styles.loadingSpinner}>
+                <div className={styles.spinner}></div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
+
+  if (!isSessionReady && error) {
     return (
       <Section spacing="large" background="default">
         <Container>
