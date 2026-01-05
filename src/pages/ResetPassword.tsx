@@ -90,13 +90,51 @@ const ResetPassword = () => {
         return;
       }
 
-      // We have a recovery token - manually set the session
-      console.log('ResetPassword: Manually setting session from recovery token...');
+      // We have a recovery token - use verifyOtp to exchange it for a session
+      console.log('ResetPassword: Verifying recovery token...', { 
+        tokenLength: accessToken?.length,
+        hasRefreshToken: !!refreshToken 
+      });
       
       try {
+        // Try using the token hash from the URL
+        // The token_hash parameter is what Supabase actually uses
+        const tokenHash = hashParams.get('token_hash');
+        
+        if (tokenHash) {
+          // New flow: use token_hash with verifyOtp
+          console.log('ResetPassword: Using token_hash with verifyOtp...');
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: 'recovery',
+          });
+
+          console.log('ResetPassword: verifyOtp result', { 
+            hasSession: !!data.session, 
+            hasUser: !!data.user,
+            userId: data.user?.id,
+            error: verifyError?.message 
+          });
+
+          if (verifyError) {
+            console.error('ResetPassword: Verify error', verifyError);
+            setError('Your password reset link has expired or is invalid. Please request a new one.');
+            return;
+          }
+
+          if (data.session) {
+            console.log('ResetPassword: Session established via verifyOtp!');
+            setIsSessionReady(true);
+            window.history.replaceState(null, '', window.location.pathname);
+            return;
+          }
+        }
+
+        // Fallback: try setSession with access_token (for older links)
+        console.log('ResetPassword: Trying setSession fallback...');
         const { data, error: sessionError } = await supabase.auth.setSession({
           access_token: accessToken!,
-          refresh_token: refreshToken || accessToken!,  // Use access_token as fallback if no refresh_token
+          refresh_token: refreshToken || '',
         });
 
         console.log('ResetPassword: setSession result', { 
