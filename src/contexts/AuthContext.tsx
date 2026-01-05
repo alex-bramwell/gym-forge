@@ -267,6 +267,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw new Error(error.message);
     }
     setUser(null);
+    // Clear registration intent on logout to prevent stale redirects
+    sessionStorage.removeItem('cf_comet_registration_intent');
   };
 
   const resetPassword = async (email: string) => {
