@@ -124,8 +124,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     if (data.user) {
-      const profile = await fetchUserProfile(data.user.id);
-      setUser(profile);
+      // Don't block on profile fetch - let onAuthStateChange handle it
+      fetchUserProfile(data.user.id).then(profile => {
+        if (profile) setUser(profile);
+      }).catch(err => {
+        console.error('Error fetching profile after login:', err);
+      });
     }
   };
 
