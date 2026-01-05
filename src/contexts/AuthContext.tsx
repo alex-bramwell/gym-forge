@@ -80,11 +80,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check active session on mount
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (session?.user) {
-          const profile = await fetchUserProfile(session.user.id);
-          setUser(profile);
+        // Check localStorage directly for session (SDK getSession hangs)
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const storageKey = `sb-${supabaseUrl.split('//')[1].split('.')[0]}-auth-token`;
+        const storedSession = localStorage.getItem(storageKey);
+        
+        if (storedSession) {
+          const session = JSON.parse(storedSession);
+          if (session?.user?.id) {
+            console.log('Found session in localStorage:', session.user.id);
+            const profile = await fetchUserProfile(session.user.id);
+            setUser(profile);
+          }
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
