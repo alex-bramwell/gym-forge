@@ -51,23 +51,36 @@ const ResetPassword = () => {
   const [isSessionReady, setIsSessionReady] = useState(false);
 
   useEffect(() => {
-    // Check if this is a valid password reset link and manually set up the session
-    // detectSessionInUrl is disabled, so we handle URL tokens manually
+    // Check if this is a valid password reset link
+    // With detectSessionInUrl: true and flowType: 'pkce', Supabase will auto-process the URL
     const checkResetToken = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = hashParams.get('access_token');
       const refreshToken = hashParams.get('refresh_token');
       const type = hashParams.get('type');
+      const errorParam = hashParams.get('error');
+      const errorDescription = hashParams.get('error_description');
 
       console.log('ResetPassword: checking token', { 
         type, 
         hasAccessToken: !!accessToken, 
         hasRefreshToken: !!refreshToken,
-        hashLength: window.location.hash.length 
+        hashLength: window.location.hash.length,
+        error: errorParam
       });
+
+      // Check for error in URL (e.g., expired token)
+      if (errorParam) {
+        console.error('ResetPassword: Error in URL', { errorParam, errorDescription });
+        setError(errorDescription || 'Your password reset link has expired or is invalid. Please request a new one.');
+        return;
+      }
 
       // No hash params - check if we already have a session
       if (!accessToken && !type) {
+        // Wait a moment for Supabase to process any tokens
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           console.log('ResetPassword: Found existing session');
@@ -90,14 +103,40 @@ const ResetPassword = () => {
         return;
       }
 
-      // We have a recovery token - use verifyOtp to exchange it for a session
-      console.log('ResetPassword: Verifying recovery token...', { 
-        tokenLength: accessToken?.length,
-        hasRefreshToken: !!refreshToken 
-      });
+      // We have a recovery token - Supabase should auto-process it
+      // Wait for auth state to update
+      console.log('ResetPassword: Waiting for Supabase to process recovery token...');
       
-      try {
-        // Try using the token hash from the URL
+      // Set up listener for auth state changes
+      let resolved = false;
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        console.log('ResetPassword: Auth state changed', { event, hasSession: !!session });
+        if (!resolved && session) {
+          resolved = true;
+          setIsSessionReady(true);
+          window.history.replaceState(null, '', window.location.pathname);
+          subscription.unsubscribe();
+        }
+      });
+
+      // Also check immediately in case event already fired
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && !resolved) {
+        console.log('ResetPassword: Session already exists');
+        resolved = true;
+        setIsSessionReady(true);
+        window.history.replaceState(null, '', window.location.pathname);
+        subscription.unsubscribe();
+        return;
+      }
+
+      // If we have tokens but no session yet, try to exchange them
+      if (accessToken && !resolved) {
+        console.log('ResetPassword: Trying to exchange token...');
+        
+        try {
+          // Try using the token hash from the URL
+          const tokenHash = hashParams.get('token_hash');
         // The token_hash parameter is what Supabase actually uses
         const tokenHash = hashParams.get('token_hash');
         
@@ -131,11 +170,26 @@ const ResetPassword = () => {
         }
 
         // Fallback: try setSession with access_token (for older links)
-        console.log('ResetPassword: Trying setSession fallback...');
-        const { data, error: sessionError } = await supabase.auth.setSession({
+        console.log('ResetPassword: Trying setSession fallback...', {
+          accessTokenPreview: accessToken?.substring(0, 20) + '...',
+          refreshTokenPreview: refreshToken?.substring(0, 20) + '...' || 'none'
+        });
+        
+        // Add timeout to prevent hanging
+        const setSessionPromise = supabase.auth.setSession({
           access_token: accessToken!,
           refresh_token: refreshToken || '',
         });
+        
+        const timeoutPromise = new Promise<{ data: { session: null; user: null }; error: Error }>((resolve) => 
+          setTimeout(() => resolve({ 
+            data: { session: null, user: null }, 
+            error: new Error('Session setup timed out after 10 seconds') 
+          }), 10000)
+        );
+        
+        const result = await Promise.race([setSessionPromise, timeoutPromise]);
+        const { data, error: sessionError } = result;
 
         console.log('ResetPassword: setSession result', { 
           hasSession: !!data.session, 
@@ -146,7 +200,9 @@ const ResetPassword = () => {
 
         if (sessionError) {
           console.error('ResetPassword: Session error', sessionError);
-          if (sessionError.message.includes('expired') || sessionError.message.includes('invalid') || sessionError.message.includes('Token')) {
+          if (sessionError.message.includes('timed out')) {
+            setError('Connection timed out. Please check your internet and try again.');
+          } else if (sessionError.message.includes('expired') || sessionError.message.includes('invalid') || sessionError.message.includes('Token')) {
             setError('Your password reset link has expired or is invalid. Please request a new one.');
           } else {
             setError(sessionError.message);
@@ -166,6 +222,15 @@ const ResetPassword = () => {
         console.error('ResetPassword: Exception setting session', err);
         setError('An error occurred verifying your reset link. Please try again.');
       }
+      }
+
+      // Set a timeout to show error if nothing resolves
+      setTimeout(() => {
+        if (!resolved) {
+          subscription.unsubscribe();
+          setError('Unable to verify your reset link. It may have expired. Please request a new one.');
+        }
+      }, 15000);
     };
 
     checkResetToken();
