@@ -85,12 +85,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const storageKey = `sb-${supabaseUrl.split('//')[1].split('.')[0]}-auth-token`;
         const storedSession = localStorage.getItem(storageKey);
         
+        console.log('AuthContext: Checking localStorage, key:', storageKey);
+        console.log('AuthContext: Found session:', !!storedSession);
+        
         if (storedSession) {
           const session = JSON.parse(storedSession);
+          console.log('AuthContext: Session user:', session?.user?.id, session?.user?.email);
+          
           if (session?.user?.id) {
-            console.log('Found session in localStorage:', session.user.id);
-            const profile = await fetchUserProfile(session.user.id);
-            setUser(profile);
+            // Try to fetch profile, but use session data as fallback
+            let profile: User | null = null;
+            
+            try {
+              profile = await fetchUserProfile(session.user.id);
+              console.log('AuthContext: Fetched profile:', profile?.name);
+            } catch (e) {
+              console.error('AuthContext: Profile fetch failed:', e);
+            }
+            
+            // If profile fetch fails, create user from session data
+            if (!profile && session.user) {
+              console.log('AuthContext: Using session data as fallback');
+              profile = {
+                id: session.user.id,
+                email: session.user.email || '',
+                name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                membershipType: 'trial',
+                joinDate: session.user.created_at || new Date().toISOString(),
+              };
+            }
+            
+            if (profile) {
+              console.log('AuthContext: Setting user:', profile.name);
+              setUser(profile);
+            }
           }
         }
       } catch (error) {
