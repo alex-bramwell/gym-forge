@@ -85,38 +85,61 @@ const ResetPassword = () => {
       if (tokenHash && type === 'recovery') {
         console.log('ResetPassword: Using token_hash from query params...');
         try {
-          // Add timeout to prevent hanging
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Request timed out')), 10000);
+          // Try direct API call first to bypass any SDK issues
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+          
+          console.log('ResetPassword: Making direct API call to verify token...');
+          
+          const response = await fetch(`${supabaseUrl}/auth/v1/verify`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+            },
+            body: JSON.stringify({
+              token_hash: tokenHash,
+              type: 'recovery',
+            }),
           });
 
-          const verifyPromise = supabase.auth.verifyOtp({
-            token_hash: tokenHash,
-            type: 'recovery',
+          console.log('ResetPassword: API response status', response.status);
+          
+          const result = await response.json();
+          console.log('ResetPassword: API result', { 
+            hasAccessToken: !!result.access_token,
+            hasRefreshToken: !!result.refresh_token,
+            error: result.error || result.error_description
           });
 
-          const { data, error: verifyError } = await Promise.race([verifyPromise, timeoutPromise]) as Awaited<typeof verifyPromise>;
-
-          console.log('ResetPassword: verifyOtp result', { 
-            hasSession: !!data.session, 
-            hasUser: !!data.user,
-            error: verifyError?.message 
-          });
-
-          if (verifyError) {
-            setError('Your password reset link has expired or is invalid. Please request a new one.');
+          if (!response.ok || result.error) {
+            setError(result.error_description || result.error || 'Your password reset link has expired or is invalid. Please request a new one.');
             return;
           }
 
-          if (data.session) {
-            console.log('ResetPassword: Session established via verifyOtp!');
+          // Now set the session with the tokens we got
+          if (result.access_token && result.refresh_token) {
+            console.log('ResetPassword: Setting session with tokens from API...');
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token: result.access_token,
+              refresh_token: result.refresh_token,
+            });
+
+            if (sessionError) {
+              console.error('ResetPassword: setSession error', sessionError);
+              setError('Failed to establish session. Please try again.');
+              return;
+            }
+
+            console.log('ResetPassword: Session established!');
             setIsSessionReady(true);
-            // Clean up URL
             window.history.replaceState(null, '', window.location.pathname);
             return;
           }
+
+          setError('Invalid response from server. Please try again.');
         } catch (err) {
-          console.error('ResetPassword: verifyOtp exception', err);
+          console.error('ResetPassword: Exception', err);
           setError('Unable to verify your reset link. Please request a new password reset.');
           return;
         }
