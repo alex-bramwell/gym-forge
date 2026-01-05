@@ -43,13 +43,21 @@ const Navbar: React.FC = () => {
   }, [location]);
 
   // Listen for Supabase PASSWORD_RECOVERY event to open modal
+  // But NOT when we're on the /reset-password page (it handles itself)
   useEffect(() => {
+    // Skip setting up the listener if we're on the reset-password page
+    if (location.pathname === '/reset-password') {
+      console.log('On reset-password page - skipping PASSWORD_RECOVERY listener in Navbar');
+      return;
+    }
+
     console.log('Setting up PASSWORD_RECOVERY listener in Navbar');
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Navbar auth state change:', { event, hasSession: !!session });
 
-      if (event === 'PASSWORD_RECOVERY') {
+      // Don't handle PASSWORD_RECOVERY if on reset-password page
+      if (event === 'PASSWORD_RECOVERY' && location.pathname !== '/reset-password') {
         console.log('PASSWORD_RECOVERY event detected - opening modal');
         setAuthModalMode('changePassword');
         setAuthModalInitialError('');
@@ -72,7 +80,7 @@ const Navbar: React.FC = () => {
       console.log('Cleaning up PASSWORD_RECOVERY listener in Navbar');
       subscription.unsubscribe();
     };
-  }, []); // Empty deps - only set up once
+  }, [location.pathname]); // Re-run when pathname changes
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

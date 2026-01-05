@@ -85,10 +85,17 @@ const ResetPassword = () => {
       
       try {
         // Use setSession to establish the session from the tokens in the URL
-        const { data, error: sessionError } = await supabase.auth.setSession({
+        // Add a timeout in case it hangs
+        const setSessionPromise = supabase.auth.setSession({
           access_token: accessToken!,
           refresh_token: refreshToken || '',
         });
+
+        const timeoutPromise = new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Session setup timed out')), 10000)
+        );
+
+        const { data, error: sessionError } = await Promise.race([setSessionPromise, timeoutPromise]);
 
         console.log('ResetPassword: setSession result', { 
           hasSession: !!data.session, 
@@ -107,6 +114,7 @@ const ResetPassword = () => {
         }
 
         if (data.session) {
+          console.log('ResetPassword: Session established successfully!');
           setIsSessionReady(true);
           // Clear the hash from URL for cleaner appearance
           window.history.replaceState(null, '', window.location.pathname);
@@ -115,7 +123,12 @@ const ResetPassword = () => {
         }
       } catch (err) {
         console.error('ResetPassword: Exception setting session', err);
-        setError('An error occurred verifying your reset link. Please try again.');
+        const message = err instanceof Error ? err.message : 'An error occurred';
+        if (message.includes('timed out')) {
+          setError('Verification took too long. Please try clicking the link again or request a new one.');
+        } else {
+          setError('An error occurred verifying your reset link. Please try again.');
+        }
       }
     };
 
