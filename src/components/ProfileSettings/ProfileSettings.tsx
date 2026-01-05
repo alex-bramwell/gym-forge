@@ -17,7 +17,8 @@ const ProfileSettings: React.FC = () => {
   // Password change state
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPasswords, setShowPasswords] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
@@ -35,7 +36,27 @@ const ProfileSettings: React.FC = () => {
     };
   };
 
+  // Password strength calculator (matching AuthModal)
+  const calculatePasswordStrength = (pwd: string): { strength: number; label: string; color: string } => {
+    if (!pwd) return { strength: 0, label: '', color: '' };
+
+    let strength = 0;
+    if (pwd.length >= 8) strength += 20;
+    if (pwd.length >= 12) strength += 20;
+    if (pwd.length >= 16) strength += 10;
+    if (/[a-z]/.test(pwd)) strength += 10;
+    if (/[A-Z]/.test(pwd)) strength += 10;
+    if (/[0-9]/.test(pwd)) strength += 10;
+    if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pwd)) strength += 15;
+    if (pwd.length >= 20) strength += 5;
+
+    if (strength < 40) return { strength, label: 'Weak', color: '#ff4444' };
+    if (strength < 70) return { strength, label: 'Medium', color: '#ffaa00' };
+    return { strength, label: 'Strong', color: '#22c55e' };
+  };
+
   const passwordRequirements = validatePassword(newPassword);
+  const passwordStrength = newPassword ? calculatePasswordStrength(newPassword) : null;
   const isPasswordValid = newPassword
     ? Object.values(passwordRequirements).every(Boolean)
     : false;
@@ -241,23 +262,24 @@ const ProfileSettings: React.FC = () => {
 
           <div className={styles.field}>
             <label htmlFor="newPassword" className={styles.label}>New Password *</label>
-            <div className={styles.passwordField}>
+            <div className={styles.passwordInputWrapper}>
               <input
                 id="newPassword"
-                type={showPasswords ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className={styles.input}
                 placeholder="Enter your new password"
                 disabled={isPasswordLoading}
+                autoComplete="new-password"
               />
               <button
                 type="button"
                 className={styles.passwordToggle}
-                onClick={() => setShowPasswords(!showPasswords)}
-                aria-label={showPasswords ? 'Hide passwords' : 'Show passwords'}
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPasswords ? (
+                {showPassword ? (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
                     <line x1="1" y1="1" x2="23" y2="23" />
@@ -271,22 +293,65 @@ const ProfileSettings: React.FC = () => {
               </button>
             </div>
 
+            {showPassword && (
+              <div className={styles.securityWarning}>
+                <svg className={styles.warningIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span>Password is visible</span>
+              </div>
+            )}
+
+            {passwordStrength && (
+              <div className={styles.passwordStrength}>
+                <div className={styles.strengthBar}>
+                  <div
+                    className={styles.strengthFill}
+                    style={{
+                      width: `${passwordStrength.strength}%`,
+                      backgroundColor: passwordStrength.color,
+                    }}
+                  />
+                </div>
+                <span className={styles.strengthLabel} style={{ color: passwordStrength.color }}>
+                  {passwordStrength.label}
+                </span>
+              </div>
+            )}
+
             {newPassword && (
-              <div className={styles.passwordRequirements}>
-                <div className={passwordRequirements.minLength ? styles.valid : styles.invalid}>
-                  {passwordRequirements.minLength ? '✓' : '✗'} At least 12 characters
+              <div className={styles.passwordRequirementsBox}>
+                <div className={styles.requirementsList}>
+                  <div className={`${styles.requirement} ${passwordRequirements.minLength ? styles.met : ''}`}>
+                    <span className={styles.checkmark}>{passwordRequirements.minLength ? '✓' : '✗'}</span>
+                    <span>At least 12 characters</span>
+                  </div>
+                  <div className={`${styles.requirement} ${passwordRequirements.hasUppercase ? styles.met : ''}`}>
+                    <span className={styles.checkmark}>{passwordRequirements.hasUppercase ? '✓' : '✗'}</span>
+                    <span>One uppercase letter</span>
+                  </div>
+                  <div className={`${styles.requirement} ${passwordRequirements.hasLowercase ? styles.met : ''}`}>
+                    <span className={styles.checkmark}>{passwordRequirements.hasLowercase ? '✓' : '✗'}</span>
+                    <span>One lowercase letter</span>
+                  </div>
+                  <div className={`${styles.requirement} ${passwordRequirements.hasNumber ? styles.met : ''}`}>
+                    <span className={styles.checkmark}>{passwordRequirements.hasNumber ? '✓' : '✗'}</span>
+                    <span>One number</span>
+                  </div>
+                  <div className={`${styles.requirement} ${passwordRequirements.hasSpecial ? styles.met : ''}`}>
+                    <span className={styles.checkmark}>{passwordRequirements.hasSpecial ? '✓' : '✗'}</span>
+                    <span>One special character</span>
+                  </div>
                 </div>
-                <div className={passwordRequirements.hasUppercase ? styles.valid : styles.invalid}>
-                  {passwordRequirements.hasUppercase ? '✓' : '✗'} One uppercase letter
-                </div>
-                <div className={passwordRequirements.hasLowercase ? styles.valid : styles.invalid}>
-                  {passwordRequirements.hasLowercase ? '✓' : '✗'} One lowercase letter
-                </div>
-                <div className={passwordRequirements.hasNumber ? styles.valid : styles.invalid}>
-                  {passwordRequirements.hasNumber ? '✓' : '✗'} One number
-                </div>
-                <div className={passwordRequirements.hasSpecial ? styles.valid : styles.invalid}>
-                  {passwordRequirements.hasSpecial ? '✓' : '✗'} One special character
+                <div className={styles.passwordTip}>
+                  <svg className={styles.tipIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18h6" />
+                    <path d="M10 22h4" />
+                    <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
+                  </svg>
+                  <span>Tip: Use your browser's password manager to generate a strong password for easier sign in</span>
                 </div>
               </div>
             )}
@@ -296,24 +361,61 @@ const ProfileSettings: React.FC = () => {
             )}
 
             {passwordCompromised && passwordCompromised.compromised && (
-              <div className={styles.passwordWarning}>
-                ⚠️ This password has been found in {passwordCompromised.count?.toLocaleString()} data breaches.
-                Please choose a different password.
+              <div className={styles.compromisedWarning}>
+                <svg className={styles.warningIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <div>
+                  <div className={styles.compromisedTitle}>Password Found in Data Breach</div>
+                  <div className={styles.compromisedText}>
+                    This password has been found in {passwordCompromised.count?.toLocaleString()} data breaches.
+                    Please choose a different password.
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
           <div className={styles.field}>
             <label htmlFor="confirmPassword" className={styles.label}>Confirm New Password *</label>
-            <input
-              id="confirmPassword"
-              type={showPasswords ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={styles.input}
-              placeholder="Confirm your new password"
-              disabled={isPasswordLoading}
-            />
+            <div className={styles.passwordInputWrapper}>
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={styles.input}
+                placeholder="Confirm your new password"
+                disabled={isPasswordLoading}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            {confirmPassword && newPassword !== confirmPassword && (
+              <div className={styles.mismatchWarning}>Passwords do not match</div>
+            )}
+            {confirmPassword && newPassword === confirmPassword && newPassword && (
+              <div className={styles.matchSuccess}>Passwords match</div>
+            )}
           </div>
         </div>
 

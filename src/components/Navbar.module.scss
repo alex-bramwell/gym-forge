@@ -500,6 +500,13 @@
     font-size: 1rem;
     transition: all 0.2s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    cursor: pointer;
+    text-align: left;
 
     svg {
       width: 18px;
@@ -514,6 +521,45 @@
 
       svg {
         stroke: var(--color-secondary2);
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .dropdownItemDanger {
+    @include header;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    color: var(--color-text);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    cursor: pointer;
+    text-align: left;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: #ff4444;
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      background: rgba(255, 68, 68, 0.15);
+      color: #ff4444;
+
+      svg {
+        stroke: #ff6666;
       }
     }
 

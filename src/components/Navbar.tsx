@@ -6,7 +6,7 @@ import { AuthModal } from './AuthModal';
 import styles from './Navbar.module.scss';
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -263,6 +263,25 @@ const Navbar: React.FC = () => {
                       </svg>
                       Dashboard
                     </Link>
+                    <button
+                      className={styles.dropdownItem}
+                      onClick={async () => {
+                        closeUserDropdown();
+                        closeMenu();
+                        try {
+                          await logout();
+                        } catch (error) {
+                          console.error('Logout failed:', error);
+                        }
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                      Sign Out
+                    </button>
                   </div>
                 )}
               </div>
