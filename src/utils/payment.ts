@@ -1,4 +1,4 @@
-import { StripeError } from '@stripe/stripe-js';
+import type { StripeError } from '@stripe/stripe-js';
 
 export function formatCurrency(amount: number, currency: string = 'gbp'): string {
   const formatter = new Intl.NumberFormat('en-GB', {

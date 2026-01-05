@@ -3,7 +3,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Section, Container, Button } from '../components/common';
 import { supabase } from '../lib/supabase';
 import { formatCurrency } from '../utils/payment';
-import { Booking } from '../types';
+import type { Booking } from '../types';
 import styles from './BookingConfirmation.module.scss';
 
 const BookingConfirmation: React.FC = () => {
@@ -61,7 +61,7 @@ const BookingConfirmation: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Section spacing="large" background="light">
+      <Section spacing="large">
         <Container>
           <div className={styles.loading}>
             <div className={styles.spinner}></div>
@@ -74,7 +74,7 @@ const BookingConfirmation: React.FC = () => {
 
   if (error || !booking) {
     return (
-      <Section spacing="large" background="light">
+      <Section spacing="large">
         <Container>
           <div className={styles.error}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -99,7 +99,7 @@ const BookingConfirmation: React.FC = () => {
   }
 
   return (
-    <Section spacing="large" background="light">
+    <Section spacing="large">
       <Container>
         <div className={styles.confirmation}>
           <div className={styles.successIcon}>

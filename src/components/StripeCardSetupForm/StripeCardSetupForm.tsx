@@ -19,7 +19,7 @@ interface SetupFormProps {
   onError: (error: string) => void;
 }
 
-const SetupForm: React.FC<SetupFormProps> = ({ userId, clientSecret, onSuccess, onError }) => {
+const SetupForm: React.FC<SetupFormProps> = ({ userId, onSuccess, onError }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);

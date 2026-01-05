@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { RegistrationIntent } from '../types';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { RegistrationIntent } from '../types';
 
 interface RegistrationContextType {
   intent: RegistrationIntent | null;

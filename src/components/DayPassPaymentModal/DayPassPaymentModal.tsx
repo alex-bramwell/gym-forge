@@ -32,7 +32,6 @@ interface PaymentFormProps {
 const PaymentForm: React.FC<PaymentFormProps> = ({
   selectedClass,
   userId,
-  clientSecret,
   onSuccess,
   onError,
 }) => {
