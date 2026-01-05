@@ -115,39 +115,63 @@ const ResetPassword = () => {
         }
       }
 
-      // Method 2: Check for hash params (old format) - rely on Supabase auto-detection
+      // Method 2: Check for hash params (old format) - manually set session
       if (accessToken || hashType === 'recovery') {
-        console.log('ResetPassword: Hash params found, waiting for Supabase auto-detection...');
+        console.log('ResetPassword: Hash params found, attempting manual session setup...');
         
-        // Set up auth state listener
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          console.log('ResetPassword: Auth event received', { event, hasSession: !!session });
-          
-          if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session) {
-            console.log('ResetPassword: Session established via auth event!');
-            setIsSessionReady(true);
-            window.history.replaceState(null, '', window.location.pathname);
-            subscription.unsubscribe();
-          }
-        });
-
-        // Check if session already exists
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          console.log('ResetPassword: Session already exists');
-          setIsSessionReady(true);
-          window.history.replaceState(null, '', window.location.pathname);
-          subscription.unsubscribe();
+        const refreshToken = hashParams.get('refresh_token');
+        
+        if (!accessToken || !refreshToken) {
+          console.error('ResetPassword: Missing tokens in hash', { 
+            hasAccess: !!accessToken, 
+            hasRefresh: !!refreshToken 
+          });
+          setError('Invalid reset link. Please request a new password reset.');
           return;
         }
 
-        // Timeout after 10 seconds
-        setTimeout(() => {
-          subscription.unsubscribe();
-          if (!isSessionReady) {
-            setError('Unable to verify your reset link. It may have expired. Please request a new one.');
-          }
+        // Set up timeout FIRST before any async operations
+        const timeoutId = setTimeout(() => {
+          console.log('ResetPassword: Timeout reached');
+          setError('Unable to verify your reset link. It may have expired. Please request a new one.');
         }, 10000);
+
+        try {
+          // Try to set session manually with the tokens from the URL
+          console.log('ResetPassword: Calling setSession...');
+          const { data, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          clearTimeout(timeoutId);
+
+          console.log('ResetPassword: setSession result', {
+            hasSession: !!data.session,
+            hasUser: !!data.user,
+            error: sessionError?.message
+          });
+
+          if (sessionError) {
+            console.error('ResetPassword: setSession error', sessionError);
+            setError('Your password reset link has expired or is invalid. Please request a new one.');
+            return;
+          }
+
+          if (data.session) {
+            console.log('ResetPassword: Session established via setSession!');
+            setIsSessionReady(true);
+            window.history.replaceState(null, '', window.location.pathname);
+            return;
+          }
+
+          // No session and no error - unexpected state
+          setError('Unable to verify your reset link. Please request a new one.');
+        } catch (err) {
+          clearTimeout(timeoutId);
+          console.error('ResetPassword: setSession exception', err);
+          setError('An error occurred. Please try requesting a new password reset link.');
+        }
         
         return;
       }
