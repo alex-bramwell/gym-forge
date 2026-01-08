@@ -316,7 +316,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
                     <span className={styles.membershipBadge}>{user.membershipType}</span>
                   )}
                   <p className={styles.joinDate}>
-                    Joined: {new Date(user.joinDate).toLocaleDate-string()}
+                    Joined: {new Date(user.joinDate).toLocaleDateString()}
                   </p>
                 </div>
               </div>

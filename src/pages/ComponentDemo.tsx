@@ -15,8 +15,8 @@ const ComponentDemo = () => {
       }
 
       await userManagementService.updateUserRole({ userId: danUser.id, role: 'admin' });
-      await userManagementService.updateUserPassword('dan@crossfitcomet.com', 'password');
-      alert('Dan is now an admin and his password has been set to "password"');
+      // Password reset would need to be done through Supabase dashboard or email flow
+      alert('Dan is now an admin!');
     } catch (error) {
       console.error(error);
       alert('Failed to make Dan an admin. Check the console for errors.');
