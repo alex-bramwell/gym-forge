@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, Select, type SelectOption } from '../common';
+import { Card, Button, Select } from '../common';
 import Modal from '../common/Modal/Modal';
 import { userManagementService, type UserProfile, type InviteUserData } from '../../services/userManagementService';
 import styles from './UserManagement.module.scss';
