@@ -67,12 +67,12 @@
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  background: rgba(13, 13, 13, 0.95);
+  background: #0d0d0d;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 82, 82, 0.3);
+  border: 2px solid rgba(255, 82, 82, 0.6);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 82, 82, 0.2);
   max-height: 300px;
   overflow-y: auto;
   overflow: hidden;
@@ -111,13 +111,13 @@
 
 .selectOption {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.25rem;
   border: none;
   background: transparent;
   color: #ffffff;
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s;
   font-size: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-weight: 500;
@@ -127,18 +127,21 @@
   }
 
   &:hover {
-    background: rgba(255, 82, 82, 0.25);
+    background: rgba(255, 82, 82, 0.3);
     color: #ffffff;
+    padding-left: 1.5rem;
   }
 
   &.selected {
-    background: rgba(255, 82, 82, 0.35);
+    background: rgba(255, 82, 82, 0.4);
     color: #ffffff;
     font-weight: 600;
+    border-left: 3px solid #ff5252;
+    padding-left: 1.22rem;
   }
 
   &:active {
-    background: rgba(255, 82, 82, 0.4);
+    background: rgba(255, 82, 82, 0.5);
   }
 }
 

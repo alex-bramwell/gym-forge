@@ -48,10 +48,10 @@
   input,
   select {
     padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    background: var(--background-default);
+    background: var(--background-off-white);
     color: var(--text-primary);
     transition: all 0.2s;
 
@@ -160,7 +160,7 @@
     border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    background: var(--background-default);
+    background: var(--background-off-white);
     color: var(--text-primary);
     transition: all 0.2s;
     cursor: pointer;
@@ -327,6 +327,11 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+
+  .deleteButton {
+    height: 44px; // Match select height
+    padding: 0.5rem 1rem;
+  }
 
   @media (max-width: 768px) {
     width: 100%;

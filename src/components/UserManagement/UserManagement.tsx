@@ -355,6 +355,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
                   variant="secondary"
                   size="small"
                   onClick={() => openDeleteModal(user.id, user.name)}
+                  className={styles.deleteButton}
                 >
                   Delete
                 </Button>
