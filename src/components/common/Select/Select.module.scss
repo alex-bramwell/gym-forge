@@ -64,17 +64,20 @@
 
 .selectDropdown {
   position: absolute;
-  top: calc(100% + 0.25rem);
+  top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  background: var(--background-default);
-  border: 2px solid var(--primary);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  background: rgba(13, 13, 13, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 82, 82, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
   max-height: 300px;
   overflow-y: auto;
+  overflow: hidden;
   z-index: 1000;
-  animation: slideDown 0.15s ease-out;
+  animation: slideDown 0.2s ease-out;
 
   // Custom scrollbar
   &::-webkit-scrollbar {
@@ -111,30 +114,31 @@
   padding: 0.75rem 1rem;
   border: none;
   background: transparent;
-  color: var(--text-primary);
+  color: #ffffff;
   text-align: left;
   cursor: pointer;
   transition: all 0.15s;
   font-size: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
 
   &:last-child {
     border-bottom: none;
   }
 
   &:hover {
-    background: rgba(255, 82, 82, 0.1);
-    color: var(--primary);
+    background: rgba(255, 82, 82, 0.25);
+    color: #ffffff;
   }
 
   &.selected {
-    background: rgba(255, 82, 82, 0.15);
-    color: var(--primary);
+    background: rgba(255, 82, 82, 0.35);
+    color: #ffffff;
     font-weight: 600;
   }
 
   &:active {
-    background: rgba(255, 82, 82, 0.2);
+    background: rgba(255, 82, 82, 0.4);
   }
 }
 
