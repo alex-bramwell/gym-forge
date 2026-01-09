@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, Button } from '../common';
+import Modal from '../common/Modal/Modal';
 import { userManagementService, type UserProfile, type InviteUserData } from '../../services/userManagementService';
 import styles from './UserManagement.module.scss';
 
@@ -27,6 +28,11 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteSuccess, setInviteSuccess] = useState(false);
+
+  // Delete confirmation modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -123,16 +129,28 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
     }
   };
 
-  const handleDeleteUser = async (userId: string, userName: string) => {
-    if (!confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
-      return;
-    }
+  const openDeleteModal = (userId: string, userName: string) => {
+    setUserToDelete({ id: userId, name: userName });
+    setDeleteModalOpen(true);
+  };
 
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setUserToDelete(null);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    setDeleteLoading(true);
     try {
-      await userManagementService.deleteUser(userId);
+      await userManagementService.deleteUser(userToDelete.id);
       await loadUsers();
+      closeDeleteModal();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete user');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -335,7 +353,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
                 <Button
                   variant="secondary"
                   size="small"
-                  onClick={() => handleDeleteUser(user.id, user.name)}
+                  onClick={() => openDeleteModal(user.id, user.name)}
                 >
                   Delete
                 </Button>
@@ -350,6 +368,36 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
           )}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={deleteModalOpen} onClose={closeDeleteModal}>
+        <div className={styles.deleteModal}>
+          <h3>Delete User</h3>
+          <p>
+            Are you sure you want to delete <strong>{userToDelete?.name}</strong>?
+          </p>
+          <p className={styles.warningText}>
+            This action cannot be undone. All user data and bookings will be permanently removed.
+          </p>
+          <div className={styles.modalActions}>
+            <Button
+              variant="secondary"
+              onClick={closeDeleteModal}
+              disabled={deleteLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={confirmDeleteUser}
+              disabled={deleteLoading}
+              className={styles.deleteButton}
+            >
+              {deleteLoading ? 'Deleting...' : 'Delete User'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
