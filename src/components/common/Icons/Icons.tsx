@@ -92,7 +92,7 @@ export const ArrowDownIcon: React.FC<IconProps> = ({ className = '', size = 16 }
   </svg>
 );
 
-// Movement Category Icons
+// Movement Category Icons - matching navbar icon style
 export const GymnasticIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
   <svg
     width={size}
@@ -105,12 +105,11 @@ export const GymnasticIcon: React.FC<IconProps> = ({ className = '', size = 20 }
     strokeLinejoin="round"
     className={className}
   >
-    <circle cx="12" cy="4" r="2" />
-    <path d="M10 8v4l-2 2" />
-    <path d="M14 8v4l2 2" />
-    <path d="M8 14l-2 8" />
-    <path d="M16 14l2 8" />
-    <line x1="8" y1="14" x2="16" y2="14" />
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="6" r="1.5" />
+    <path d="M9 10h6" />
+    <path d="M9 10l-2 8" />
+    <path d="M15 10l2 8" />
   </svg>
 );
 
@@ -126,11 +125,10 @@ export const WeightliftingIcon: React.FC<IconProps> = ({ className = '', size = 
     strokeLinejoin="round"
     className={className}
   >
-    <path d="M6.5 6.5h11" />
-    <path d="M6.5 17.5h11" />
-    <rect x="3" y="6" width="3" height="12" rx="1" />
-    <rect x="18" y="6" width="3" height="12" rx="1" />
-    <rect x="8" y="10" width="8" height="4" rx="1" />
+    <circle cx="12" cy="12" r="10" />
+    <rect x="9" y="11" width="6" height="2" rx="0.5" />
+    <rect x="6.5" y="9" width="2" height="6" rx="0.5" />
+    <rect x="15.5" y="9" width="2" height="6" rx="0.5" />
   </svg>
 );
 
@@ -146,11 +144,9 @@ export const MetabolicIcon: React.FC<IconProps> = ({ className = '', size = 20 }
     strokeLinejoin="round"
     className={className}
   >
-    <circle cx="12" cy="5" r="2" />
-    <path d="M10 8l-1 5 3 3" />
-    <path d="M14 8l1 5-3 3" />
-    <path d="M9 16l-2 6" />
-    <path d="M15 16l2 6" />
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 12l2 2 4-4" />
+    <path d="M12 7v10" />
   </svg>
 );
 
@@ -167,7 +163,7 @@ export const SkillIcon: React.FC<IconProps> = ({ className = '', size = 20 }) =>
     className={className}
   >
     <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="6" />
-    <circle cx="12" cy="12" r="2" />
+    <circle cx="12" cy="12" r="4" />
+    <line x1="12" y1="2" x2="12" y2="8" />
   </svg>
 );

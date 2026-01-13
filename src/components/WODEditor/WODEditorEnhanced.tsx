@@ -128,6 +128,12 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
       cooldown = textCooldown.split('\n').filter(line => line.trim());
     }
 
+    // Validate that metcon has at least one movement
+    if (metcon.length === 0) {
+      alert('Please add at least one movement to the MetCon section.');
+      return;
+    }
+
     const allMovements = [...warmup, ...strength, ...metcon, ...cooldown];
 
     const formData: WorkoutFormData = {
@@ -361,14 +367,14 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
           <>
             {renderSectionBuilder('warmup', 'Warmup')}
             {renderSectionBuilder('strength', 'Strength')}
-            {renderSectionBuilder('metcon', 'MetCon')}
+            {renderSectionBuilder('metcon', workoutType ? workoutType.toUpperCase() : 'MetCon')}
             {renderSectionBuilder('cooldown', 'Cooldown')}
           </>
         ) : (
           <>
             {renderSectionText('warmup', 'Warmup', textWarmup, setTextWarmup)}
             {renderSectionText('strength', 'Strength', textStrength, setTextStrength)}
-            {renderSectionText('metcon', 'MetCon', textMetcon, setTextMetcon)}
+            {renderSectionText('metcon', workoutType ? workoutType.toUpperCase() : 'MetCon', textMetcon, setTextMetcon)}
             {renderSectionText('cooldown', 'Cooldown', textCooldown, setTextCooldown)}
           </>
         )}

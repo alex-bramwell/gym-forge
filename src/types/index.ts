@@ -159,18 +159,22 @@ export interface UserPermissions {
 // CrossFit Movement types
 export type MuscleGroup = 'shoulders' | 'back' | 'chest' | 'arms' | 'legs' | 'core';
 export type MovementCategory = 'gymnastic' | 'weightlifting' | 'metabolic' | 'skill';
+export type MovementSubcategory = 'olympic' | 'powerlifting' | 'calisthenics' | 'cardio' | 'accessory';
+export type WorkoutSection = 'warmup' | 'strength' | 'metcon' | 'cooldown';
 export type MovementDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export interface CrossFitMovement {
   id: string;
   name: string;
   category: MovementCategory;
+  subcategory?: MovementSubcategory;
   primary_muscle_groups: MuscleGroup[];
   secondary_muscle_groups: MuscleGroup[];
   equipment: string[];
   difficulty: MovementDifficulty;
   description?: string;
   scaling_options: string[];
+  recommended_sections?: WorkoutSection[]; // Which sections this movement is appropriate for
   created_at?: string;
   updated_at?: string;
 }
