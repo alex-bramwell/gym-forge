@@ -361,14 +361,14 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
           <>
             {renderSectionBuilder('warmup', 'Warmup')}
             {renderSectionBuilder('strength', 'Strength')}
-            {renderSectionBuilder('metcon', 'MetCon')}
+            {renderSectionBuilder('metcon', workoutType ? workoutType.toUpperCase() : 'MetCon')}
             {renderSectionBuilder('cooldown', 'Cooldown')}
           </>
         ) : (
           <>
             {renderSectionText('warmup', 'Warmup', textWarmup, setTextWarmup)}
             {renderSectionText('strength', 'Strength', textStrength, setTextStrength)}
-            {renderSectionText('metcon', 'MetCon', textMetcon, setTextMetcon)}
+            {renderSectionText('metcon', workoutType ? workoutType.toUpperCase() : 'MetCon', textMetcon, setTextMetcon)}
             {renderSectionText('cooldown', 'Cooldown', textCooldown, setTextCooldown)}
           </>
         )}

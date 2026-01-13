@@ -395,6 +395,12 @@
 .deleteButton {
   background: #ef4444 !important;
   border-color: #ef4444 !important;
+  min-width: 44px !important; // Ensure proper touch target
+  width: auto !important;
+  padding: 0.625rem !important; // Square padding for icon button
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 
   &:hover:not(:disabled) {
     background: #dc2626 !important;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, Button, Select } from '../common';
+import { DeleteIcon } from '../common/Icons';
 import Modal from '../common/Modal/Modal';
 import { userManagementService, type UserProfile, type InviteUserData } from '../../services/userManagementService';
 import styles from './UserManagement.module.scss';
@@ -356,8 +357,9 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
                   size="small"
                   onClick={() => openDeleteModal(user.id, user.name)}
                   className={styles.deleteButton}
+                  title="Delete user"
                 >
-                  Delete
+                  <DeleteIcon size={18} />
                 </Button>
               </div>
             </Card>
