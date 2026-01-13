@@ -47,17 +47,44 @@
 
   input,
   select {
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    background: var(--background-default);
+    background: var(--background-off-white);
     color: var(--text-primary);
-    transition: border-color 0.2s;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--primary);
+    }
 
     &:focus {
       outline: none;
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.1);
+    }
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    border: 2px solid var(--border-color);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='9' fill='%23ff5252' fill-opacity='0.15' stroke='%23ff5252' stroke-width='1'/%3E%3Cpath fill='%23ff5252' d='M10 12L6 8h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.625rem center;
+    background-size: 20px 20px;
+    padding-right: 3rem;
+
+    &:hover {
+      background-color: rgba(255, 82, 82, 0.05);
+    }
+
+    // Style dropdown options
+    option {
+      background: var(--background-default);
+      color: var(--text-primary);
+      padding: 0.5rem;
     }
   }
 
@@ -129,17 +156,53 @@
 
   input,
   select {
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    background: var(--background-default);
+    background: var(--background-off-white);
     color: var(--text-primary);
-    transition: border-color 0.2s;
+    transition: all 0.2s;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='9' fill='%23ff5252' fill-opacity='0.15' stroke='%23ff5252' stroke-width='1'/%3E%3Cpath fill='%23ff5252' d='M10 12L6 8h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.625rem center;
+    background-size: 20px 20px;
+    padding-right: 3rem;
+
+    &:hover {
+      border-color: var(--primary);
+      background-color: rgba(255, 82, 82, 0.05);
+    }
 
     &:focus {
       outline: none;
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 82, 82, 0.15);
+    }
+
+    // Style dropdown options
+    option {
+      background: var(--background-default);
+      color: var(--text-primary);
+      padding: 0.5rem;
+    }
+  }
+
+  input {
+    background-image: none;
+    padding-right: 1rem;
+    cursor: text;
+  }
+
+  @media (max-width: 768px) {
+    select {
+      padding: 0.875rem 1rem;
+      padding-right: 3.5rem;
+      background-size: 28px 28px;
+      background-position: right 0.5rem center;
+      min-height: 48px;
     }
   }
 }
@@ -265,24 +328,81 @@
   gap: 1rem;
   align-items: center;
 
+  .deleteButton {
+    height: 44px; // Match select height
+    padding: 0.5rem 1rem;
+  }
+
   @media (max-width: 768px) {
     width: 100%;
     justify-content: space-between;
+    gap: 0.75rem;
+
+    // Make buttons larger for easier tapping
+    button {
+      min-height: 44px;
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+    }
   }
 }
 
 .roleSelect {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 0.875rem;
-  background: var(--background-default);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: border-color 0.2s;
+  min-width: 140px;
+  flex-shrink: 0;
+}
 
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
+.deleteModal {
+  padding: 2rem;
+  max-width: 500px;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.warningText {
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444 !important;
+  border-radius: 8px;
+  font-size: 0.875rem !important;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.deleteButton {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+
+  &:hover:not(:disabled) {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
