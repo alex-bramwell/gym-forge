@@ -139,20 +139,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     setSuccess('');
 
     // Honeypot check - if filled, it's likely a bot
-    // However, password managers often auto-fill this field with the email
-    // So we check if it matches the email field (likely auto-fill) vs actual bot behavior
-    if (honeypot && honeypot !== email) {
-      // Silently fail to not alert the bot
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        setError('An error occurred. Please try again.');
-      }, 2000);
-      return;
-    }
-
-    // Clear honeypot if it was auto-filled with email (password manager behavior)
-    if (honeypot === email) {
+    // Disabled in development due to password managers/extensions auto-filling hidden fields
+    const isProduction = import.meta.env.PROD;
+    if (honeypot && isProduction) {
+      // In production, block if honeypot is filled with something other than email
+      if (honeypot !== email) {
+        console.warn('Honeypot triggered - potential bot detected');
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          setError('An error occurred. Please try again.');
+        }, 2000);
+        return;
+      }
+      setHoneypot('');
+    } else if (honeypot) {
+      // In development, just log and clear
+      console.log('Honeypot field filled (dev mode - not blocking):', honeypot);
       setHoneypot('');
     }
 
@@ -311,6 +314,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
         const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+        console.log('Attempting login to:', supabaseUrl);
+        console.log('Email:', email);
+
         const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
           method: 'POST',
           headers: {
@@ -318,17 +324,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
             'apikey': supabaseKey,
           },
           body: JSON.stringify({
-            email,
+            email: email.trim().toLowerCase(),
             password,
           }),
         });
 
         const result = await response.json();
 
-        console.log('Login API response:', { status: response.status, result });
+        console.log('Login API response:', { status: response.status, ok: response.ok, result });
 
         if (!response.ok || result.error) {
-          const errorMsg = result.error_description || result.error || 'Invalid email or password';
+          const errorMsg = result.error_description || result.error || result.msg || 'Invalid email or password';
           console.error('Login failed:', errorMsg, result);
           throw new Error(errorMsg);
         }
