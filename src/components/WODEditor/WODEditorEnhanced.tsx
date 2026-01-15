@@ -47,6 +47,8 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
   const [scalingNotes, setScalingNotes] = useState(initialData?.scalingNotes || '');
   const [status, setStatus] = useState<'draft' | 'published'>(initialData?.status || 'draft');
   const [showDescription, setShowDescription] = useState(!!initialData?.description);
+  const [showCoachNotes, setShowCoachNotes] = useState(!!initialData?.coachNotes);
+  const [showScalingNotes, setShowScalingNotes] = useState(!!initialData?.scalingNotes);
 
   // Workout type options for Select component
   const workoutTypeOptions: SelectOption[] = [
@@ -401,27 +403,61 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
       {/* Notes */}
       <div className={styles.notes}>
         <div className={styles.formGroup}>
-          <label htmlFor="coachNotes">Coach's Notes</label>
-          <textarea
-            id="coachNotes"
-            value={coachNotes}
-            onChange={(e) => setCoachNotes(e.target.value)}
-            placeholder="Additional coaching cues, focus areas, etc..."
-            className={styles.textarea}
-            rows={3}
-          />
+          <div className={styles.toggleRow}>
+            <span className={styles.toggleText}>Add coach's notes</span>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCoachNotes(!showCoachNotes);
+                if (showCoachNotes) setCoachNotes('');
+              }}
+              className={`${styles.toggleButton} ${showCoachNotes ? styles.active : ''}`}
+              aria-pressed={showCoachNotes}
+            >
+              <span className={styles.toggleTrack}>
+                <span className={styles.toggleThumb} />
+              </span>
+            </button>
+          </div>
+          {showCoachNotes && (
+            <textarea
+              id="coachNotes"
+              value={coachNotes}
+              onChange={(e) => setCoachNotes(e.target.value)}
+              placeholder="Additional coaching cues, focus areas, etc..."
+              className={styles.textarea}
+              rows={3}
+            />
+          )}
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="scalingNotes">Scaling Notes</label>
-          <textarea
-            id="scalingNotes"
-            value={scalingNotes}
-            onChange={(e) => setScalingNotes(e.target.value)}
-            placeholder="Scaling options for different fitness levels..."
-            className={styles.textarea}
-            rows={3}
-          />
+          <div className={styles.toggleRow}>
+            <span className={styles.toggleText}>Add scaling notes</span>
+            <button
+              type="button"
+              onClick={() => {
+                setShowScalingNotes(!showScalingNotes);
+                if (showScalingNotes) setScalingNotes('');
+              }}
+              className={`${styles.toggleButton} ${showScalingNotes ? styles.active : ''}`}
+              aria-pressed={showScalingNotes}
+            >
+              <span className={styles.toggleTrack}>
+                <span className={styles.toggleThumb} />
+              </span>
+            </button>
+          </div>
+          {showScalingNotes && (
+            <textarea
+              id="scalingNotes"
+              value={scalingNotes}
+              onChange={(e) => setScalingNotes(e.target.value)}
+              placeholder="Scaling options for different fitness levels..."
+              className={styles.textarea}
+              rows={3}
+            />
+          )}
         </div>
       </div>
 
