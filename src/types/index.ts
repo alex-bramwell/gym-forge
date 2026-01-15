@@ -35,7 +35,7 @@ export interface WOD {
   title: string;
   description: string;
   movements: string[];
-  type: 'amrap' | 'fortime' | 'emom' | 'strength' | 'endurance';
+  type: 'amrap' | 'fortime' | 'emom' | 'tabata' | 'strength' | 'endurance';
   duration?: string;
   rounds?: number;
 }
@@ -132,7 +132,7 @@ export interface WorkoutFormData {
   date: string;
   title: string;
   description: string;
-  workoutType: 'amrap' | 'fortime' | 'emom' | 'strength' | 'endurance';
+  workoutType: 'amrap' | 'fortime' | 'emom' | 'tabata' | 'strength' | 'endurance';
   duration?: string;
   rounds?: number;
   warmup?: string[];
@@ -159,7 +159,7 @@ export interface UserPermissions {
 // CrossFit Movement types
 export type MuscleGroup = 'shoulders' | 'back' | 'chest' | 'arms' | 'legs' | 'core';
 export type MovementCategory = 'gymnastic' | 'weightlifting' | 'metabolic' | 'skill';
-export type MovementSubcategory = 'olympic' | 'powerlifting' | 'calisthenics' | 'cardio' | 'accessory';
+export type MovementSubcategory = 'olympic' | 'powerlifting' | 'bodybuilding' | 'calisthenics' | 'cardio' | 'accessory';
 export type WorkoutSection = 'warmup' | 'strength' | 'metcon' | 'cooldown';
 export type MovementDifficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -197,7 +197,7 @@ export interface MuscleGroupStats {
 }
 
 export interface WorkoutTypeStats {
-  type: 'amrap' | 'fortime' | 'emom' | 'strength' | 'endurance';
+  type: 'amrap' | 'fortime' | 'emom' | 'tabata' | 'strength' | 'endurance';
   count: number;
   percentage: number;
 }

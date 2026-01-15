@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { MovementBuilder } from './MovementBuilder';
+import { WorkoutSummaryDrawer } from './WorkoutSummaryDrawer';
 import { Select, type SelectOption } from '../common/Select/Select';
+import { NumberInput } from '../common/NumberInput';
+import { DurationInput } from '../common/DurationInput';
 import { ArrowUpIcon, ArrowDownIcon, CloseIcon } from '../common/Icons';
 import type { WorkoutFormData, MovementSelection } from '../../types';
 import styles from './WODEditorEnhanced.module.scss';
@@ -43,12 +46,14 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
   const [coachNotes, setCoachNotes] = useState(initialData?.coachNotes || '');
   const [scalingNotes, setScalingNotes] = useState(initialData?.scalingNotes || '');
   const [status, setStatus] = useState<'draft' | 'published'>(initialData?.status || 'draft');
+  const [showDescription, setShowDescription] = useState(!!initialData?.description);
 
   // Workout type options for Select component
   const workoutTypeOptions: SelectOption[] = [
     { value: 'amrap', label: 'AMRAP' },
     { value: 'fortime', label: 'For Time' },
     { value: 'emom', label: 'EMOM' },
+    { value: 'tabata', label: 'Tabata' },
     { value: 'strength', label: 'Strength' },
     { value: 'endurance', label: 'Endurance' }
   ];
@@ -320,40 +325,53 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="description">Description *</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            placeholder="Brief workout description..."
-            className={styles.textarea}
-            rows={3}
-          />
+          <div className={styles.toggleRow}>
+            <span className={styles.toggleText}>Add workout description</span>
+            <button
+              type="button"
+              onClick={() => {
+                setShowDescription(!showDescription);
+                if (showDescription) setDescription('');
+              }}
+              className={`${styles.toggleButton} ${showDescription ? styles.active : ''}`}
+              aria-pressed={showDescription}
+            >
+              <span className={styles.toggleTrack}>
+                <span className={styles.toggleThumb} />
+              </span>
+            </button>
+          </div>
+          {showDescription && (
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief workout description..."
+              className={styles.textarea}
+              rows={3}
+            />
+          )}
         </div>
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="duration">Duration</label>
-            <input
+            <DurationInput
               id="duration"
-              type="text"
               value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              placeholder="e.g., 20:00, 12 min"
-              className={styles.input}
+              onChange={setDuration}
             />
           </div>
 
           <div className={styles.formGroup}>
             <label htmlFor="rounds">Rounds</label>
-            <input
+            <NumberInput
               id="rounds"
-              type="number"
-              value={rounds || ''}
-              onChange={(e) => setRounds(e.target.value ? parseInt(e.target.value) : undefined)}
+              value={rounds}
+              onChange={setRounds}
+              min={1}
+              max={99}
               placeholder="e.g., 3, 5"
-              className={styles.input}
             />
           </div>
         </div>
@@ -410,26 +428,44 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
       {/* Status and Actions */}
       <div className={styles.footer}>
         <div className={styles.statusToggle}>
-          <label>
+          <div className={styles.statusOption}>
             <input
               type="radio"
+              id="status-draft"
               name="status"
               value="draft"
               checked={status === 'draft'}
               onChange={() => setStatus('draft')}
             />
-            Draft
-          </label>
-          <label>
+            <label htmlFor="status-draft" className={styles.statusLabel}>
+              <span className={styles.statusIcon}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </span>
+              Draft
+            </label>
+          </div>
+          <div className={styles.statusOption}>
             <input
               type="radio"
+              id="status-published"
               name="status"
               value="published"
               checked={status === 'published'}
               onChange={() => setStatus('published')}
             />
-            Published
-          </label>
+            <label htmlFor="status-published" className={styles.statusLabel}>
+              <span className={styles.statusIcon}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </span>
+              Published
+            </label>
+          </div>
         </div>
 
         <div className={styles.actions}>
@@ -441,6 +477,14 @@ export const WODEditorEnhanced: React.FC<WODEditorEnhancedProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Floating Workout Summary Drawer - only in builder mode */}
+      {mode === 'builder' && (
+        <WorkoutSummaryDrawer
+          sectionMovements={sectionMovements}
+          onRemoveMovement={handleRemoveMovement}
+        />
+      )}
     </form>
   );
 };

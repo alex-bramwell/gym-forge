@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { movementService } from '../../services/movementService';
-import { GymnasticIcon, WeightliftingIcon, MetabolicIcon, SkillIcon } from '../common/Icons';
+import { NumberInput } from '../common/NumberInput';
+import { DurationInput } from '../common/DurationInput';
+import Modal from '../common/Modal/Modal';
 import type { CrossFitMovement, MuscleGroup, MovementSelection } from '../../types';
 import styles from './MovementBuilder.module.scss';
 
@@ -21,11 +23,12 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
   const [selectedMovement, setSelectedMovement] = useState<CrossFitMovement | null>(null);
 
   // Movement details form
-  const [reps, setReps] = useState('');
-  const [weight, setWeight] = useState('');
-  const [distance, setDistance] = useState('');
+  const [reps, setReps] = useState<number | undefined>(undefined);
+  const [weight, setWeight] = useState<number | undefined>(undefined);
+  const [distance, setDistance] = useState<number | undefined>(undefined);
   const [duration, setDuration] = useState('');
   const [notes, setNotes] = useState('');
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     loadMovements();
@@ -80,11 +83,22 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
   const handleSelectMovement = (movement: CrossFitMovement) => {
     setSelectedMovement(movement);
     // Reset form
-    setReps('');
-    setWeight('');
-    setDistance('');
+    setReps(undefined);
+    setWeight(undefined);
+    setDistance(undefined);
     setDuration('');
     setNotes('');
+    setShowNotes(false);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMovement(null);
+    setReps(undefined);
+    setWeight(undefined);
+    setDistance(undefined);
+    setDuration('');
+    setNotes('');
+    setShowNotes(false);
   };
 
   const handleAddToWorkout = () => {
@@ -92,9 +106,9 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
 
     const selection: MovementSelection = {
       movement: selectedMovement,
-      reps: reps || undefined,
-      weight: weight || undefined,
-      distance: distance || undefined,
+      reps: reps ? String(reps) : undefined,
+      weight: weight ? `${weight} lbs` : undefined,
+      distance: distance ? `${distance}m` : undefined,
       duration: duration || undefined,
       notes: notes || undefined
     };
@@ -103,11 +117,12 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
 
     // Reset selection
     setSelectedMovement(null);
-    setReps('');
-    setWeight('');
-    setDistance('');
+    setReps(undefined);
+    setWeight(undefined);
+    setDistance(undefined);
     setDuration('');
     setNotes('');
+    setShowNotes(false);
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -119,13 +134,49 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
     }
   };
 
-  const getCategoryIcon = (category: string) => {
+  const getSubcategoryStyle = (subcategory: string | undefined, category: string) => {
+    // Use subcategory if available, otherwise fall back to category
+    if (subcategory) {
+      switch (subcategory) {
+        case 'olympic': return styles.subcategoryOlympic;
+        case 'powerlifting': return styles.subcategoryPowerlifting;
+        case 'bodybuilding': return styles.subcategoryBodybuilding;
+        case 'calisthenics': return styles.subcategoryCalisthenics;
+        case 'cardio': return styles.subcategoryCardio;
+        case 'accessory': return styles.subcategoryAccessory;
+        default: return styles.subcategoryAccessory;
+      }
+    }
+    // Fallback to category-based styling
     switch (category) {
-      case 'gymnastic': return <GymnasticIcon size={24} />;
-      case 'weightlifting': return <WeightliftingIcon size={24} />;
-      case 'metabolic': return <MetabolicIcon size={24} />;
-      case 'skill': return <SkillIcon size={24} />;
-      default: return <GymnasticIcon size={24} />;
+      case 'gymnastic': return styles.subcategoryCalisthenics;
+      case 'weightlifting': return styles.subcategoryPowerlifting;
+      case 'metabolic': return styles.subcategoryCardio;
+      case 'skill': return styles.subcategoryAccessory;
+      default: return styles.subcategoryAccessory;
+    }
+  };
+
+  const getSubcategoryLabel = (subcategory: string | undefined, category: string) => {
+    // Use subcategory if available, otherwise fall back to category
+    if (subcategory) {
+      switch (subcategory) {
+        case 'olympic': return 'Olympic';
+        case 'powerlifting': return 'Powerlifting';
+        case 'bodybuilding': return 'Bodybuilding';
+        case 'calisthenics': return 'Calisthenics';
+        case 'cardio': return 'Cardio';
+        case 'accessory': return 'Accessory';
+        default: return subcategory;
+      }
+    }
+    // Fallback to category
+    switch (category) {
+      case 'gymnastic': return 'Gymnastic';
+      case 'weightlifting': return 'Weightlifting';
+      case 'metabolic': return 'Metabolic';
+      case 'skill': return 'Skill';
+      default: return category;
     }
   };
 
@@ -150,143 +201,160 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
         <h3>Add Movement to {section.charAt(0).toUpperCase() + section.slice(1)}</h3>
       </div>
 
-      {!selectedMovement ? (
-        <>
-          {/* Search and Filters */}
-          <div className={styles.filters}>
-            <input
-              type="text"
-              placeholder="Search movements..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={styles.searchInput}
-            />
+      {/* Search and Filters */}
+      <div className={styles.filters}>
+        <input
+          type="text"
+          placeholder="Search movements..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={styles.searchInput}
+        />
 
-            <div className={styles.muscleGroupFilters}>
-              {MUSCLE_GROUPS.map(mg => (
-                <button
-                  key={mg}
-                  onClick={() => toggleMuscleGroup(mg)}
-                  className={`${styles.filterButton} ${
-                    selectedMuscleGroups.includes(mg) ? styles.active : ''
-                  }`}
-                >
-                  {mg.charAt(0).toUpperCase() + mg.slice(1)}
-                </button>
-              ))}
+        <div className={styles.muscleGroupFilters}>
+          {MUSCLE_GROUPS.map(mg => (
+            <button
+              key={mg}
+              onClick={() => toggleMuscleGroup(mg)}
+              className={`${styles.filterButton} ${
+                selectedMuscleGroups.includes(mg) ? styles.active : ''
+              }`}
+            >
+              {mg.charAt(0).toUpperCase() + mg.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Movement Grid */}
+      <div className={styles.movementGrid}>
+        {filteredMovements.length === 0 ? (
+          <p className={styles.noResults}>No movements found matching your filters.</p>
+        ) : (
+          filteredMovements.map(movement => (
+            <div
+              key={movement.id}
+              className={styles.movementCard}
+              onClick={() => handleSelectMovement(movement)}
+            >
+              <h4 className={styles.movementName}>{movement.name}</h4>
+
+              <div className={styles.cardMeta}>
+                <span className={`${styles.categoryPill} ${getSubcategoryStyle(movement.subcategory, movement.category)}`}>
+                  {getSubcategoryLabel(movement.subcategory, movement.category)}
+                </span>
+                <span className={`${styles.difficulty} ${getDifficultyColor(movement.difficulty)}`}>
+                  {movement.difficulty}
+                </span>
+              </div>
+
+              <div className={styles.muscleGroups}>
+                {movement.primary_muscle_groups.map(mg => (
+                  <span key={mg} className={styles.muscleTag}>
+                    {mg}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          ))
+        )}
+      </div>
 
-          {/* Movement Grid */}
-          <div className={styles.movementGrid}>
-            {filteredMovements.length === 0 ? (
-              <p className={styles.noResults}>No movements found matching your filters.</p>
-            ) : (
-              filteredMovements.map(movement => (
-                <div
-                  key={movement.id}
-                  className={styles.movementCard}
-                  onClick={() => handleSelectMovement(movement)}
-                >
-                  <div className={styles.cardHeader}>
-                    <span className={styles.categoryIcon}>
-                      {getCategoryIcon(movement.category)}
-                    </span>
-                    <h4>{movement.name}</h4>
-                  </div>
-
-                  <div className={styles.cardBody}>
-                    <div className={styles.muscleGroups}>
-                      {movement.primary_muscle_groups.map(mg => (
-                        <span key={mg} className={`${styles.muscleTag} ${styles.primary}`}>
-                          {mg}
-                        </span>
-                      ))}
-                    </div>
-
-                    <span className={`${styles.difficulty} ${getDifficultyColor(movement.difficulty)}`}>
-                      {movement.difficulty}
-                    </span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          {/* Movement Details Form */}
-          <div className={styles.detailsForm}>
-            <div className={styles.selectedMovement}>
-              <h4>{selectedMovement.name}</h4>
-              <p className={styles.description}>{selectedMovement.description}</p>
-              <button
-                onClick={() => setSelectedMovement(null)}
-                className={styles.backButton}
-              >
-                ← Back to Selection
-              </button>
+      {/* Movement Details Modal */}
+      <Modal isOpen={!!selectedMovement} onClose={handleCloseModal}>
+        {selectedMovement && (
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3>{selectedMovement.name}</h3>
+              <div className={styles.modalMeta}>
+                <span className={`${styles.categoryPill} ${getSubcategoryStyle(selectedMovement.subcategory, selectedMovement.category)}`}>
+                  {getSubcategoryLabel(selectedMovement.subcategory, selectedMovement.category)}
+                </span>
+                <span className={`${styles.difficulty} ${getDifficultyColor(selectedMovement.difficulty)}`}>
+                  {selectedMovement.difficulty}
+                </span>
+              </div>
+              {selectedMovement.description && (
+                <p className={styles.modalDescription}>{selectedMovement.description}</p>
+              )}
             </div>
 
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label htmlFor="reps">Reps/Sets</label>
-                <input
+                <label htmlFor="reps">Reps</label>
+                <NumberInput
                   id="reps"
-                  type="text"
-                  placeholder="e.g., 10, 21-15-9, 5x5"
                   value={reps}
-                  onChange={(e) => setReps(e.target.value)}
-                  className={styles.input}
+                  onChange={setReps}
+                  min={1}
+                  max={999}
+                  placeholder="0"
+                  label="reps"
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label htmlFor="weight">Weight</label>
-                <input
+                <NumberInput
                   id="weight"
-                  type="text"
-                  placeholder="e.g., 135 lbs, RX, bodyweight"
                   value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  className={styles.input}
+                  onChange={setWeight}
+                  min={1}
+                  max={999}
+                  placeholder="0"
+                  label="lbs"
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label htmlFor="distance">Distance</label>
-                <input
+                <NumberInput
                   id="distance"
-                  type="text"
-                  placeholder="e.g., 400m, 1 mile"
                   value={distance}
-                  onChange={(e) => setDistance(e.target.value)}
-                  className={styles.input}
+                  onChange={setDistance}
+                  min={1}
+                  max={9999}
+                  placeholder="0"
+                  label="m"
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label htmlFor="duration">Duration</label>
-                <input
+                <DurationInput
                   id="duration"
-                  type="text"
-                  placeholder="e.g., 2 min, 30 sec"
                   value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className={styles.input}
+                  onChange={setDuration}
                 />
               </div>
 
               <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                <label htmlFor="notes">Additional Notes</label>
-                <textarea
-                  id="notes"
-                  placeholder="Any additional instructions or notes..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className={styles.textarea}
-                  rows={3}
-                />
+                <div className={styles.toggleRow}>
+                  <span className={styles.toggleText}>Add notes</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowNotes(!showNotes);
+                      if (showNotes) setNotes('');
+                    }}
+                    className={`${styles.toggleButton} ${showNotes ? styles.active : ''}`}
+                    aria-pressed={showNotes}
+                  >
+                    <span className={styles.toggleTrack}>
+                      <span className={styles.toggleThumb} />
+                    </span>
+                  </button>
+                </div>
+                {showNotes && (
+                  <textarea
+                    id="notes"
+                    placeholder="Any additional instructions or notes..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className={styles.textarea}
+                    rows={3}
+                  />
+                )}
               </div>
             </div>
 
@@ -308,8 +376,8 @@ export const MovementBuilder: React.FC<MovementBuilderProps> = ({ onAddMovement,
               Add to {section.charAt(0).toUpperCase() + section.slice(1)}
             </button>
           </div>
-        </>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };

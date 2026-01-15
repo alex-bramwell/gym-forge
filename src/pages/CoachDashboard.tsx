@@ -88,7 +88,7 @@ const CoachDashboard = () => {
         <div className={styles.dashboard}>
           <div className={styles.header}>
             <div>
-              <h1 className={styles.title}>Coach Dashboard</h1>
+              <h1 className={styles.title}>Coach View</h1>
               <p className={styles.subtitle}>
                 Welcome back, {user.name}! {permissions.isAdmin && '(Admin)'}
               </p>
