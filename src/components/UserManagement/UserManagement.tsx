@@ -395,7 +395,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ isAdmin }) => {
               variant="primary"
               onClick={confirmDeleteUser}
               disabled={deleteLoading}
-              className={styles.deleteButton}
+              className={styles.modalDeleteButton}
             >
               {deleteLoading ? 'Deleting...' : 'Delete User'}
             </Button>

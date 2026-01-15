@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button } from '../common';
+import { Card, Button, NumberInput, DurationInput } from '../common';
 import { Select, type SelectOption } from '../common/Select/Select';
 import type { WorkoutFormData } from '../../types';
 import styles from './WODEditor.module.scss';
@@ -42,6 +42,7 @@ export const WODEditor: React.FC<WODEditorProps> = ({
     { value: 'amrap', label: 'AMRAP' },
     { value: 'fortime', label: 'For Time' },
     { value: 'emom', label: 'EMOM' },
+    { value: 'tabata', label: 'Tabata' },
     { value: 'strength', label: 'Strength' },
     { value: 'endurance', label: 'Endurance' }
   ];
@@ -135,26 +136,22 @@ export const WODEditor: React.FC<WODEditorProps> = ({
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="duration">Duration</label>
-            <input
+            <DurationInput
               id="duration"
-              type="text"
-              placeholder="e.g., 20 min or 15 min cap"
               value={formData.duration}
-              onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
+              onChange={(value) => setFormData(prev => ({ ...prev, duration: value }))}
             />
           </div>
 
           <div className={styles.formGroup}>
             <label htmlFor="rounds">Rounds</label>
-            <input
+            <NumberInput
               id="rounds"
-              type="number"
+              value={formData.rounds}
+              onChange={(value) => setFormData(prev => ({ ...prev, rounds: value }))}
+              min={1}
+              max={99}
               placeholder="Number of rounds"
-              value={formData.rounds || ''}
-              onChange={(e) => setFormData(prev => ({
-                ...prev,
-                rounds: e.target.value ? parseInt(e.target.value) : undefined
-              }))}
             />
           </div>
         </div>
