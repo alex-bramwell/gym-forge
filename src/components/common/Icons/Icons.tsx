@@ -92,8 +92,7 @@ export const ArrowDownIcon: React.FC<IconProps> = ({ className = '', size = 16 }
   </svg>
 );
 
-// Movement Category Icons - matching navbar icon style
-export const GymnasticIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
+export const ChevronUpIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
   <svg
     width={size}
     height={size}
@@ -105,15 +104,11 @@ export const GymnasticIcon: React.FC<IconProps> = ({ className = '', size = 20 }
     strokeLinejoin="round"
     className={className}
   >
-    <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="6" r="1.5" />
-    <path d="M9 10h6" />
-    <path d="M9 10l-2 8" />
-    <path d="M15 10l2 8" />
+    <polyline points="18 15 12 9 6 15" />
   </svg>
 );
 
-export const WeightliftingIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
+export const ChevronDownIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
   <svg
     width={size}
     height={size}
@@ -125,45 +120,7 @@ export const WeightliftingIcon: React.FC<IconProps> = ({ className = '', size = 
     strokeLinejoin="round"
     className={className}
   >
-    <circle cx="12" cy="12" r="10" />
-    <rect x="9" y="11" width="6" height="2" rx="0.5" />
-    <rect x="6.5" y="9" width="2" height="6" rx="0.5" />
-    <rect x="15.5" y="9" width="2" height="6" rx="0.5" />
+    <polyline points="6 9 12 15 18 9" />
   </svg>
 );
 
-export const MetabolicIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M8 12l2 2 4-4" />
-    <path d="M12 7v10" />
-  </svg>
-);
-
-export const SkillIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="4" />
-    <line x1="12" y1="2" x2="12" y2="8" />
-  </svg>
-);

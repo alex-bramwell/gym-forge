@@ -4,8 +4,6 @@ export {
   CloseIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  GymnasticIcon,
-  WeightliftingIcon,
-  MetabolicIcon,
-  SkillIcon
+  ChevronUpIcon,
+  ChevronDownIcon
 } from './Icons';

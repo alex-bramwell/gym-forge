@@ -105,9 +105,59 @@ npm run lint     # Run ESLint checks
 
 ### Local Development with Supabase
 
+You have two options for local development:
+
+1. **Use Production Supabase (Recommended for Codespaces)** - Simpler setup, shared data with production
+2. **Use Local Supabase in Docker** - Isolated data, more complex setup
+
+---
+
+#### Option 1: GitHub Codespaces with Production Supabase (Recommended)
+
+The simplest way to develop in GitHub Codespaces is to connect directly to production Supabase. This avoids port forwarding issues and ensures you're working with real data.
+
+##### Setup
+
+1. Create `.env.local` file pointing to production:
+
+```bash
+cat > .env.local << 'EOF'
+# Local Development Configuration
+# Uses production Supabase for local development in Codespaces
+# This ensures local dev and production use the same database
+
+VITE_SUPABASE_URL=https://woyupptawdfhzrfzksgb.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-production-anon-key>
+EOF
+```
+
+2. Start the development server:
+
+```bash
+npm run dev
+```
+
+3. Make port 5173 public in the PORTS tab (right-click → Port Visibility → Public)
+
+4. Open the forwarded URL and log in with your production credentials
+
+##### Benefits
+- No Docker required
+- No port forwarding issues for Supabase
+- Work with real data
+- Simpler debugging
+
+##### Considerations
+- Changes affect production data (be careful with destructive operations)
+- Need production credentials
+
+---
+
+#### Option 2: Local Supabase in Docker (Isolated Data)
+
 For full local development without affecting production data, you can run Supabase locally in Docker.
 
-#### Quick Start: GitHub Codespaces (Step-by-Step)
+##### Quick Start: GitHub Codespaces (Step-by-Step)
 
 Follow these steps in order to set up local development in Codespaces:
 
@@ -423,7 +473,11 @@ gym.CrossFit.Comet/
 │       ├── 002_create_bookings.sql
 │       ├── 003_create_payments.sql
 │       ├── 004_create_trial_memberships.sql
-│       └── 005_update_profiles.sql
+│       ├── 005_update_profiles.sql
+│       ├── 007_create_workouts.sql       # WOD/workout programming
+│       ├── 008_create_movements.sql      # CrossFit movements database
+│       ├── 013_add_movement_subcategories.sql  # Movement categorization
+│       └── 014_fix_workouts_created_by.sql     # Auto-set created_by trigger
 ├── eslint.config.js
 ├── index.html
 ├── package.json
@@ -1172,6 +1226,8 @@ stripe trigger payment_intent.succeeded
 
 - **Honeypot field** - invisible to users, catches automated bots
 - Silently rejects submissions if honeypot is filled
+- **Development mode**: Honeypot is disabled in development (`import.meta.env.PROD === false`) to prevent false positives from browser extensions and password managers that auto-fill hidden fields
+- **Production mode**: Honeypot is fully active and blocks suspicious submissions
 
 ### Input Sanitization
 
@@ -1507,6 +1563,7 @@ Please follow the [Git Workflow](#git-workflow--gitflow-guidelines) guidelines.
 - Verify Supabase URL and anon key
 - Check email confirmation is enabled
 - Review Supabase auth logs
+- In development: If login fails silently with "An error occurred", check if a browser extension is auto-filling the honeypot field (this is disabled in dev mode, but older builds may still have it enabled)
 
 **Build Failing**
 - Run `npm run lint` to check for errors
