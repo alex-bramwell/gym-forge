@@ -6,7 +6,7 @@ export { Modal } from './Modal';
 export { Select } from './Select';
 export { NumberInput } from './NumberInput';
 export { DurationInput } from './DurationInput';
-export { InfoTooltip } from './InfoTooltip';
+export * from './InfoTooltip';
 
 export type { ButtonProps } from './Button';
 export type { CardProps } from './Card';
@@ -15,4 +15,3 @@ export type { ContainerProps } from './Container';
 export type { SelectOption } from './Select';
 export type { NumberInputProps } from './NumberInput';
 export type { DurationInputProps } from './DurationInput';
-export type { InfoTooltipProps } from './InfoTooltip';
