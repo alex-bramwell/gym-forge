@@ -48,7 +48,14 @@
   animation: tooltipFadeIn 0.15s ease-out;
 
   @media (max-width: 480px) {
-    max-width: 240px;
+    max-width: 95vw;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 0;
+    width: 95vw;
+    font-size: 0.95em;
+    padding: 0.5rem 0.75rem;
+    box-sizing: border-box;
   }
 
   &.top {
