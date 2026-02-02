@@ -59,9 +59,9 @@ function getQuickBooksAuthUrl(state: string, redirectUri: string): string {
     throw new Error('QUICKBOOKS_CLIENT_ID not configured');
   }
 
-  const authUrl = environment === 'production'
-    ? 'https://appcenter.intuit.com/connect/oauth2'
-    : 'https://appcenter-sandbox.intuit.com/connect/oauth2';
+  // QuickBooks uses the same authorization URL for both sandbox and production
+  // The environment is determined by your credentials, not the URL
+  const authUrl = 'https://appcenter.intuit.com/connect/oauth2';
 
   const params = new URLSearchParams({
     client_id: clientId,
