@@ -15,6 +15,7 @@ A modern, full-featured gym management web application built with React, TypeScr
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Quick Start](#quick-start)
+- [Docker Setup](#docker-setup)
 - [Local Development with Supabase](#local-development-with-supabase)
 - [Project Structure](#project-structure)
 - [Git Workflow & GitFlow Guidelines](#git-workflow--gitflow-guidelines)
@@ -140,6 +141,66 @@ DATABASE_PASSWORD=your-database-password
 ```
 
 The script connects via Session Pooler (IPv4 compatible) to run SQL statements directly.
+
+---
+
+## Docker Setup
+
+For a containerized development environment, you can use Docker and Docker Compose.
+
+### Prerequisites
+
+- Docker Desktop installed
+- Docker Compose (included with Docker Desktop)
+
+### Using Docker
+
+```bash
+# Build and start the container
+docker-compose up
+
+# Or run in detached mode
+docker-compose up -d
+
+# Stop the container
+docker-compose down
+
+# Rebuild after dependency changes
+docker-compose up --build
+```
+
+The application will be available at `http://localhost:5173`.
+
+### Docker Configuration
+
+**Dockerfile:**
+- Based on `node:20-alpine` for a lightweight image
+- Installs dependencies using `npm ci` for faster, reproducible builds
+- Exposes port 5173
+- Runs the Vite dev server with host binding for container access
+
+**docker-compose.yml:**
+- Mounts the current directory to `/app` for live code reloading
+- Preserves `node_modules` in a named volume to avoid conflicts
+- Loads environment variables from `.env.local`
+- Sets `NODE_ENV=development`
+
+**.dockerignore:**
+- Excludes unnecessary files (node_modules, dist, .git, .env) from the Docker build context
+- Reduces image size and build time
+
+### Environment Variables
+
+Ensure you have a `.env.local` file with your Supabase credentials before starting:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+See the [Local Development with Supabase](#local-development-with-supabase) section for more details on environment configuration.
+
+---
 
 ### Local Development with Supabase
 
