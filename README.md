@@ -170,18 +170,14 @@ For a containerized development environment, you can use Docker and Docker Compo
 Docker handles all dependencies automatically with hot reloading:
 
 ```bash
-# Start development servers (recommended)
-npm run docker:dev
+# Start development servers (simplest way)
+./dev.sh
 
 # Or use docker-compose directly
-docker-compose up
-
-# Rebuild after dependency changes
-npm run docker:dev:build
-# or: docker-compose up --build
+docker-compose up --build
 
 # Stop services
-npm run docker:dev:down
+./down.sh
 # or: docker-compose down
 
 # View logs
@@ -194,16 +190,18 @@ docker-compose logs -f frontend # Frontend only
 - Frontend: http://localhost:5173 (Vite with HMR)
 - Backend: http://localhost:3001 (Express with hot reload)
 
+**No local npm needed!** All dependencies run inside Docker containers.
+
 ### Production Mode
 
 Optimized production builds with nginx:
 
 ```bash
 # Build and start production services
-npm run docker:prod:build
+./prod.sh
 
-# Stop production services
-npm run docker:prod:down
+# Stop services
+./down.sh
 ```
 
 **Production servers:**
