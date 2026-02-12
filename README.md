@@ -16,6 +16,7 @@ A modern, full-featured gym management web application built with React, TypeScr
 - [Tech Stack](#tech-stack)
 - [Quick Start](#quick-start)
 - [Docker Setup](#docker-setup)
+- [Root Directory Files Reference](#root-directory-files-reference)
 - [Local Development with Supabase](#local-development-with-supabase)
 - [Project Structure](#project-structure)
 - [Git Workflow & GitFlow Guidelines](#git-workflow--gitflow-guidelines)
@@ -85,22 +86,27 @@ A modern, full-featured gym management web application built with React, TypeScr
 git clone https://github.com/alex-bramwell/gym.CrossFit.Comet.git
 cd gym.CrossFit.Comet
 
-# Install dependencies
+# Copy environment variables and add your credentials
+cp .env.example .env.local
+
+# Start development with Docker (Recommended - no npm install needed!)
+./scripts/dev.sh
+
+# Or use npm directly (requires Node.js and npm installed locally)
 npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Start development server with Docker (Recommended)
-docker-compose up
-
-# Or use npm directly
 npm run dev
 ```
 
 ### Available Scripts
 
-**Docker commands (Recommended):**
+**Shell scripts (Easiest):**
+```bash
+./scripts/dev.sh     # Start development environment
+./scripts/prod.sh    # Start production environment
+./scripts/down.sh    # Stop all Docker services
+```
+
+**Docker commands:**
 ```bash
 docker-compose up          # Start in Docker container
 docker-compose up -d       # Start in detached mode
@@ -284,6 +290,88 @@ We migrated from Vercel serverless functions to an Express API server for better
 - ✅ Faster development - no need to switch between `vercel dev` and Docker
 
 **Note:** The `/api` folder with Vercel functions still exists for production deployment but is replaced by the Express server (`/server`) in local development.
+
+---
+
+## Root Directory Files Reference
+
+This section documents all files in the project root directory and their purpose.
+
+### Configuration Files
+
+| File | Purpose |
+|------|---------|
+| **package.json** | Node.js project manifest - dependencies, scripts, project metadata |
+| **package-lock.json** | Locked dependency versions for reproducible builds |
+| **tsconfig.json** | Root TypeScript configuration |
+| **tsconfig.app.json** | TypeScript config for application code |
+| **tsconfig.node.json** | TypeScript config for Node.js tooling (Vite config, etc.) |
+| **vite.config.ts** | Vite build tool configuration - dev server, build settings, plugins |
+| **eslint.config.js** | ESLint linting rules and configuration |
+| **vercel.json** | Vercel deployment configuration - routes, rewrites, headers |
+
+### Docker Files
+
+| File | Purpose |
+|------|---------|
+| **Dockerfile** | Frontend development container - Node 20 Alpine with Vite dev server |
+| **Dockerfile.prod** | Frontend production container - Multi-stage build with nginx |
+| **Dockerfile.api** | Backend development container - Express API with hot reload (tsx) |
+| **Dockerfile.api.prod** | Backend production container - Express API optimized build |
+| **docker-compose.yml** | Development orchestration - Frontend + Backend with hot reload |
+| **docker-compose.prod.yml** | Production orchestration - Optimized builds with nginx |
+| **nginx.conf** | Nginx configuration for production frontend - SPA routing, gzip, caching |
+| **.dockerignore** | Excludes files from Docker build context (node_modules, .git, etc.) |
+
+### Environment & Secrets
+
+| File | Purpose |
+|------|---------|
+| **.env.example** | Template showing required environment variables |
+| **.env.local** | Local development environment variables (gitignored - not committed) |
+| **.gitignore** | Specifies files Git should ignore (node_modules, .env, build files) |
+| **.vercelignore** | Specifies files Vercel should ignore during deployment |
+
+### Entry Points
+
+| File | Purpose |
+|------|---------|
+| **index.html** | HTML entry point - Loads the React app via `<script src="/src/main.tsx">` |
+| **README.md** | Project documentation (this file) |
+
+### Project Directories
+
+| Directory | Purpose |
+|-----------|---------|
+| **src/** | React application source code - components, pages, styles, utilities |
+| **server/** | Express API server - accounting integrations, payment endpoints |
+| **api/** | Vercel serverless functions - production API endpoints (replaced by /server locally) |
+| **public/** | Static assets served directly - images, fonts, favicon |
+| **scripts/** | Utility shell scripts - dev.sh, prod.sh, down.sh for Docker management |
+| **supabase/** | Database migrations and Supabase configuration |
+| **node_modules/** | Installed npm dependencies (not committed to git) |
+| **.git/** | Git version control metadata |
+| **.github/** | GitHub Actions workflows (CI/CD, automated migrations) |
+| **.claude/** | Claude Code CLI configuration and memory |
+| **.devcontainer/** | VS Code dev container configuration |
+
+### Why Two API Folders?
+
+The project has both `/api` and `/server` directories:
+
+- **`/api`** - Vercel serverless functions for **production deployment**
+  - Used when deployed to Vercel
+  - Each file becomes an endpoint (e.g., `api/payments/create-payment-intent.ts` → `/api/payments/create-payment-intent`)
+
+- **`/server`** - Express API server for **local development**
+  - Used when running with Docker
+  - Full Express server with middleware, better debugging, hot reload
+  - Provides the same endpoints as `/api` but in a traditional server architecture
+
+This dual approach allows:
+- ✅ Easy local development with Docker (no platform dependencies)
+- ✅ Production deployment to Vercel (leveraging serverless infrastructure)
+- ✅ Team onboarding without Vercel CLI (`docker-compose up` just works)
 
 ---
 
