@@ -165,30 +165,50 @@ For a containerized development environment, you can use Docker and Docker Compo
 - Docker Desktop installed
 - Docker Compose (included with Docker Desktop)
 
-### Using Docker
+### Development Mode
 
-Docker handles all dependencies automatically - just run:
+Docker handles all dependencies automatically with hot reloading:
 
 ```bash
-# Start services
+# Start development servers (recommended)
+npm run docker:dev
+
+# Or use docker-compose directly
 docker-compose up
 
-# Start in detached mode (runs in background)
-docker-compose up -d
+# Rebuild after dependency changes
+npm run docker:dev:build
+# or: docker-compose up --build
 
 # Stop services
-docker-compose down
-
-# Rebuild after code changes
-docker-compose up --build
+npm run docker:dev:down
+# or: docker-compose down
 
 # View logs
 docker-compose logs -f
-
-# View logs for specific service
-docker-compose logs -f backend
-docker-compose logs -f frontend
+docker-compose logs -f backend  # Backend only
+docker-compose logs -f frontend # Frontend only
 ```
+
+**Development servers:**
+- Frontend: http://localhost:5173 (Vite with HMR)
+- Backend: http://localhost:3001 (Express with hot reload)
+
+### Production Mode
+
+Optimized production builds with nginx:
+
+```bash
+# Build and start production services
+npm run docker:prod:build
+
+# Stop production services
+npm run docker:prod:down
+```
+
+**Production servers:**
+- Frontend: http://localhost:8080 (Nginx serving static build)
+- Backend: http://localhost:3001 (Express production mode)
 
 The application will be available at:
 - **Frontend**: `http://localhost:5173`
