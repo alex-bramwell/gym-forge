@@ -1,0 +1,158 @@
+// ── Liquid Glass Mixins ──
+// Reusable patterns for the glass design system.
+// All mixins use CSS custom properties for white-label compatibility.
+
+// Glass Surface — translucent blur with border
+@mixin glass($blur: var(--glass-blur), $bg: var(--glass-bg)) {
+  background: var(--glass-bg-dense); // fallback
+  @supports (backdrop-filter: blur(1px)) {
+    background: $bg;
+    backdrop-filter: blur($blur);
+    -webkit-backdrop-filter: blur($blur);
+  }
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+// Elevated Glass — heavier blur + stronger shadow
+@mixin glass-elevated {
+  @include glass(var(--glass-blur-heavy), var(--glass-bg-elevated));
+  box-shadow: var(--shadow-lg);
+}
+
+// Dense Glass — more opaque, better text readability
+@mixin glass-dense {
+  @include glass(var(--glass-blur-heavy), var(--glass-bg-dense));
+}
+
+// Gradient Border — light refraction edge via mask technique
+@mixin gradient-border($radius: var(--radius-lg), $width: 1px) {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * #{$width});
+    border-radius: $radius;
+    padding: $width;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0.12) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+  }
+}
+
+// Light Refraction — subtle top highlight
+@mixin light-refraction {
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      transparent 100%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+  }
+}
+
+// Spring Hover Lift
+@mixin hover-lift($distance: -6px) {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    box-shadow var(--duration-normal) var(--ease-smooth);
+
+  &:hover {
+    transform: translateY($distance);
+  }
+
+  &:active {
+    transform: translateY(calc(#{$distance} / 2));
+  }
+}
+
+// Gradient Text
+@mixin gradient-text($from: var(--color-accent), $to: var(--color-secondary)) {
+  background: linear-gradient(135deg, $from 0%, $to 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+// Glass Skeleton Shimmer — loading placeholder
+@mixin glass-skeleton($width: 100%, $height: 1rem, $radius: var(--radius-md)) {
+  width: $width;
+  height: $height;
+  border-radius: $radius;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-surface-rgb), 0.08) 0%,
+    rgba(var(--color-surface-rgb), 0.18) 40%,
+    rgba(var(--color-surface-rgb), 0.08) 80%
+  );
+  background-size: 200% 100%;
+  animation: glassShimmer 1.8s ease-in-out infinite;
+}
+
+// Glass Spinner — accent-colored ring
+@mixin glass-spinner($size: 48px) {
+  width: $size;
+  height: $size;
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Ambient Background Orbs — blurred color blobs
+@mixin ambient-orbs {
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 40%;
+    height: 60%;
+    background: radial-gradient(
+      ellipse,
+      rgba(var(--color-accent-rgb), 0.06) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    filter: blur(60px);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -10%;
+    width: 40%;
+    height: 60%;
+    background: radial-gradient(
+      ellipse,
+      rgba(var(--color-secondary-rgb), 0.06) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    filter: blur(60px);
+  }
+}

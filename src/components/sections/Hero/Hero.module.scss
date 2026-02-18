@@ -127,8 +127,8 @@
 }
 
 .title {
-  font-family: 'Knewave', cursive, sans-serif;
-  font-weight: normal;
+  font-family: var(--font-header, 'Inter'), sans-serif;
+  font-weight: 700;
   font-size: clamp(2.5rem, 5vw, 4rem);
   margin-bottom: 1.5rem;
   color: var(--color-text);
@@ -199,9 +199,9 @@
 }
 
 .cardTitle {
-  font-family: 'Knewave', cursive, sans-serif;
+  font-family: var(--font-header, 'Inter'), sans-serif;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: normal;
+  font-weight: 700;
   color: var(--color-text);
   margin-bottom: 1rem;
   letter-spacing: 0.02em;

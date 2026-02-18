@@ -1,7 +1,7 @@
 @use '../../../styles/variables' as *;
 
 .button {
-  font-family: 'Knewave', cursive, sans-serif;
+  font-family: var(--font-header, 'Inter'), sans-serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;

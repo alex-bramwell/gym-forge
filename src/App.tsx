@@ -28,6 +28,7 @@ import PlatformHome from './pages/platform/PlatformHome';
 import PlatformLogin from './pages/platform/PlatformLogin';
 import PlatformSignup from './pages/platform/PlatformSignup';
 import Onboarding from './pages/platform/Onboarding';
+import Guide from './pages/platform/Guide';
 
 // Component to detect password recovery tokens and redirect
 function PasswordRecoveryRedirect() {
@@ -213,6 +214,7 @@ function PlatformShell() {
         <Route path="/login" element={<PlatformLogin />} />
         <Route path="/signup" element={<PlatformSignup />} />
         <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/guide" element={<Guide />} />
       </Routes>
     </PlatformLayout>
   );

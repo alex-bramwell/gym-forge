@@ -1,0 +1,23 @@
+.gradientText {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
+.accent {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent2) 100%);
+}
+
+.secondary {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary2) 100%);
+}
+
+.warm {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-secondary) 100%);
+}
+
+.cool {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-specialty) 100%);
+}

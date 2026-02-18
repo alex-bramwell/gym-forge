@@ -2,6 +2,8 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { FEATURES } from '../../config/features';
+import FeatureIcon from '../../components/common/FeatureIcon';
+import { getLocalizedPrice } from '../../utils/pricing';
 import type { FeatureKey } from '../../types/tenant';
 import styles from './Onboarding.module.scss';
 
@@ -33,6 +35,8 @@ const Onboarding = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const price = getLocalizedPrice();
 
   // Check if user is authenticated
   useEffect(() => {
@@ -247,7 +251,7 @@ const Onboarding = () => {
     );
   };
 
-  const totalMonthlyCost = selectedFeatures.length * 10;
+  const totalMonthlyCost = price.formatted;
 
   return (
     <div className={styles.onboarding}>
@@ -289,7 +293,7 @@ const Onboarding = () => {
             <div className={styles.step}>
               <h1 className={styles.stepTitle}>Name Your Gym</h1>
               <p className={styles.stepDescription}>
-                Choose a name and URL for your gym website.
+                Choose a name and URL for your gym.
               </p>
 
               <form onSubmit={handleStep1Submit} className={styles.form}>
@@ -445,8 +449,8 @@ const Onboarding = () => {
             <div className={styles.step}>
               <h1 className={styles.stepTitle}>Choose Your Features</h1>
               <p className={styles.stepDescription}>
-                Select the features you need. £10/month per feature. You can add or remove
-                features anytime.
+                Toggle on the features you want active. Everything is included in your
+                {' '}{totalMonthlyCost}/month plan.
               </p>
 
               <form onSubmit={handleStep3Submit} className={styles.form}>
@@ -459,17 +463,17 @@ const Onboarding = () => {
                         onChange={() => toggleFeature(feature.key)}
                         className={styles.featureCheckbox}
                       />
-                      <div className={styles.featureIcon}>{feature.icon}</div>
+                      <div className={styles.featureIcon}><FeatureIcon featureKey={feature.key} /></div>
                       <h3 className={styles.featureName}>{feature.name}</h3>
                       <p className={styles.featureDescription}>{feature.description}</p>
-                      <p className={styles.featurePrice}>£10/month</p>
+                      <p className={styles.featurePrice}>Included</p>
                     </label>
                   ))}
                 </div>
 
                 <div className={styles.costSummary}>
-                  <span className={styles.costLabel}>Total monthly cost:</span>
-                  <span className={styles.costAmount}>£{totalMonthlyCost}</span>
+                  <span className={styles.costLabel}>Monthly plan:</span>
+                  <span className={styles.costAmount}>{totalMonthlyCost}/mo</span>
                 </div>
 
                 <div className={styles.buttonGroup}>
@@ -527,7 +531,7 @@ const Onboarding = () => {
                 </div>
                 <div className={styles.summaryItem}>
                   <span className={styles.summaryLabel}>Monthly Cost:</span>
-                  <span className={styles.summaryValue}>£{totalMonthlyCost}</span>
+                  <span className={styles.summaryValue}>{totalMonthlyCost}/mo</span>
                 </div>
               </div>
 
@@ -555,13 +559,18 @@ const Onboarding = () => {
           {/* Success State */}
           {launched && (
             <div className={styles.success}>
-              <div className={styles.successAnimation}>🎉</div>
+              <div className={styles.successAnimation}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
               <h1 className={styles.successTitle}>Your gym is live!</h1>
               <p className={styles.successDescription}>
-                Congratulations! Your gym website is now active and ready for members.
+                Congratulations! Your gym is now online and ready for members.
               </p>
               <div className={styles.successUrl}>
-                <strong>Your website:</strong>
+                <strong>Your gym URL:</strong>
                 <br />
                 nosweat.fitness/gym/{slug}
               </div>

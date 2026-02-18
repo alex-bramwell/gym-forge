@@ -1,0 +1,12 @@
+export { default as WodIllustration } from './WodIllustration';
+export { default as CoachProfileIllustration } from './CoachProfileIllustration';
+export { default as DashboardIllustration } from './DashboardIllustration';
+export { default as DayPassIllustration } from './DayPassIllustration';
+export { default as SignUpIllustration } from './SignUpIllustration';
+export { default as BrandingIllustration } from './BrandingIllustration';
+export { default as FeatureTogglesIllustration } from './FeatureTogglesIllustration';
+export { default as ScheduleIllustration } from './ScheduleIllustration';
+export { default as ServiceBookingIllustration } from './ServiceBookingIllustration';
+export { default as MemberManagementIllustration } from './MemberManagementIllustration';
+export { default as AnalyticsIllustration } from './AnalyticsIllustration';
+export { default as AccountingIllustration } from './AccountingIllustration';
