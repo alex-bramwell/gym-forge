@@ -1,33 +1,126 @@
+@use '../../styles/mixins' as *;
+
+// ── Platform Design Tokens ──
+$platform-bg: #0a0a0f;
+$platform-bg-light: #12121a;
+$platform-text: #f0f0f5;
+$platform-text-muted: #8b8b9e;
+$platform-accent: #2563eb;
+$platform-accent-rgb: 37, 99, 235;
+$platform-secondary: #7c3aed;
+$platform-secondary-rgb: 124, 58, 237;
+$platform-border: rgba(255, 255, 255, 0.08);
+$platform-border-bright: rgba(255, 255, 255, 0.15);
+$platform-glass-bg: rgba(255, 255, 255, 0.04);
+$platform-glass-bg-elevated: rgba(255, 255, 255, 0.07);
+
 .authPage {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9fafb;
+  background: $platform-bg;
   padding: 2rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow: hidden;
+
+  // Ambient glow
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 50%;
+    height: 60%;
+    background: radial-gradient(
+      ellipse,
+      rgba($platform-accent, 0.08) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    filter: blur(60px);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -10%;
+    width: 50%;
+    height: 60%;
+    background: radial-gradient(
+      ellipse,
+      rgba($platform-secondary, 0.06) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    filter: blur(60px);
+  }
 }
 
 .authCard {
-  background: #ffffff;
+  background: $platform-glass-bg-elevated;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $platform-border;
   padding: 3rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   max-width: 450px;
   width: 100%;
+  position: relative;
+  z-index: 1;
+
+  // Gradient border overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  // Light refraction
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    padding: 2rem 1.5rem;
+  }
 }
 
 .authTitle {
   font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
+  font-weight: 800;
+  color: $platform-text;
   text-align: center;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .authSubtitle {
   font-size: 0.95rem;
-  color: #6b7280;
+  color: $platform-text-muted;
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -45,65 +138,96 @@
 }
 
 .label {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #111827;
+  color: $platform-text;
 }
 
 .input {
-  padding: 0.75rem 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $platform-border;
+  border-radius: 12px;
   font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: $platform-text;
+  transition: all 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
 
   &:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: rgba($platform-accent, 0.5);
+    box-shadow: 0 0 0 3px rgba($platform-accent, 0.12);
+    background: rgba(255, 255, 255, 0.06);
   }
 }
 
 .submitButton {
-  background: #2563eb;
+  background: linear-gradient(135deg, $platform-accent 0%, $platform-secondary 100%);
   color: #ffffff;
-  padding: 0.875rem;
+  padding: 0.9rem;
   border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 16px rgba($platform-accent, 0.25);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 100%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
 
   &:hover {
-    background: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba($platform-accent, 0.35);
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translateY(0) scale(0.97);
   }
 
   &:disabled {
-    background: #9ca3af;
+    background: rgba(255, 255, 255, 0.08);
+    color: $platform-text-muted;
     cursor: not-allowed;
+    box-shadow: none;
+
+    &:hover {
+      transform: none;
+    }
   }
 }
 
 .error {
-  background: #fee2e2;
-  color: #dc2626;
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #fca5a5;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   font-size: 0.9rem;
   text-align: center;
 }
 
 .success {
-  background: #d1fae5;
-  color: #059669;
+  background: rgba(5, 150, 105, 0.12);
+  border: 1px solid rgba(5, 150, 105, 0.25);
+  color: #6ee7b7;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   font-size: 0.9rem;
   text-align: center;
 }
@@ -111,18 +235,17 @@
 .footer {
   text-align: center;
   margin-top: 1.5rem;
-  color: #6b7280;
+  color: $platform-text-muted;
   font-size: 0.95rem;
 }
 
 .link {
-  color: #2563eb;
+  color: $platform-accent;
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
 
   &:hover {
-    color: #1e40af;
-    text-decoration: underline;
+    color: lighten($platform-accent, 15%);
   }
 }

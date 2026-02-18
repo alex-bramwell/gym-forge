@@ -1,18 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { FEATURES } from '../../config/features';
+import FeatureIcon from '../../components/common/FeatureIcon';
+import { getLocalizedPrice } from '../../utils/pricing';
 import styles from './PlatformHome.module.scss';
 
 const PlatformHome = () => {
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
-
-  const toggleFeature = (key: string) => {
-    setSelectedFeatures((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-    );
-  };
-
-  const totalCost = selectedFeatures.length * 10;
+  const price = useMemo(() => getLocalizedPrice(), []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -26,24 +20,61 @@ const PlatformHome = () => {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
+          <div className={styles.heroBadge}>
+            <span className={styles.heroBadgeDot} />
+            Built for gym owners, by athletes
+          </div>
           <h1 className={styles.heroHeadline}>
-            The all-in-one platform for gyms & fitness studios
+            Stop juggling five apps<br />to run one gym
           </h1>
           <p className={styles.heroSubtitle}>
-            Launch your professional gym website in minutes. Class booking, WOD
-            programming, coach profiles, payments — all customisable to your brand.
+            Booking, programming, payments, coaching tools, and your
+            public website — finally in a single platform. Branded to you.
+            Live in 60 seconds.
           </p>
           <div className={styles.heroCtas}>
             <Link to="/signup" className={styles.ctaPrimary}>
-              Get Started
+              Get Started Free
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
             </Link>
-            <button
-              onClick={() => scrollToSection('features')}
-              className={styles.ctaSecondary}
-            >
-              Learn More
-            </button>
+            <Link to="/guide" className={styles.ctaSecondary}>
+              See All Features
+            </Link>
           </div>
+          <div className={styles.heroStats}>
+            <div className={styles.heroStat}>
+              <span className={styles.heroStatValue}>{price.formatted}/mo</span>
+              <span className={styles.heroStatLabel}>Everything included</span>
+            </div>
+            <div className={styles.heroStatDivider} />
+            <div className={styles.heroStat}>
+              <span className={styles.heroStatValue}>60s</span>
+              <span className={styles.heroStatLabel}>To go live</span>
+            </div>
+            <div className={styles.heroStatDivider} />
+            <div className={styles.heroStat}>
+              <span className={styles.heroStatValue}>0</span>
+              <span className={styles.heroStatLabel}>Other apps needed</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Statement */}
+      <section className={styles.mission}>
+        <div className={styles.container}>
+          <h2 className={styles.missionHeadline}>
+            Your Gym, online in one place
+          </h2>
+          <p className={styles.missionBody}>
+            Everyone says &ldquo;just use AI to build it.&rdquo; But you shouldn&rsquo;t
+            need to be a prompt engineer to run your gym. No Sweat has done all the
+            work for you. Bookings, scheduling, payments, coaching tools and your
+            public-facing site, all consolidated into one platform built specifically
+            for gyms. No coding. No stitching tools together. Just one low monthly price.
+          </p>
         </div>
       </section>
 
@@ -52,17 +83,26 @@ const PlatformHome = () => {
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Everything you need to run your gym</h2>
           <p className={styles.sectionSubtitle}>
-            Only pay for what you use — £10/month per feature
+            All features included for {price.formatted}/month
           </p>
 
           <div className={styles.featuresGrid}>
             {FEATURES.map((feature) => (
               <div key={feature.key} className={styles.featureCard}>
-                <div className={styles.featureIcon}>{feature.icon}</div>
+                <div className={styles.featureIcon}><FeatureIcon featureKey={feature.key} /></div>
                 <h3 className={styles.featureName}>{feature.name}</h3>
                 <p className={styles.featureDescription}>{feature.description}</p>
               </div>
             ))}
+          </div>
+
+          <div className={styles.featuresCta}>
+            <Link to="/guide" className={styles.featuresCtaLink}>
+              Explore all features in detail
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -83,57 +123,59 @@ const PlatformHome = () => {
               <div className={styles.stepNumber}>2</div>
               <h3 className={styles.stepTitle}>Customise your brand</h3>
               <p className={styles.stepDescription}>
-                Choose your colors, fonts, and upload your logo. Make it yours.
+                Choose your colours, upload your logo, set your theme. Make it yours.
               </p>
             </div>
             <div className={styles.step}>
               <div className={styles.stepNumber}>3</div>
               <h3 className={styles.stepTitle}>Choose your features</h3>
               <p className={styles.stepDescription}>
-                Pick only the features you need. Add or remove anytime.
+                Toggle on the features you need. Everything is included in your plan.
               </p>
             </div>
             <div className={styles.step}>
               <div className={styles.stepNumber}>4</div>
-              <h3 className={styles.stepTitle}>Launch your site</h3>
+              <h3 className={styles.stepTitle}>Go live</h3>
               <p className={styles.stepDescription}>
-                Go live instantly with your custom gym website. No technical skills needed.
+                Your gym is online instantly. No technical skills needed.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive Pricing */}
+      {/* Pricing */}
       <section className={styles.pricing}>
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Simple, transparent pricing</h2>
           <p className={styles.pricingTagline}>
-            £10/month per feature. No contracts. Cancel anytime.
+            One plan. Everything included. No surprises.
           </p>
 
-          <div className={styles.pricingCalculator}>
-            <h3 className={styles.calculatorTitle}>Build your plan</h3>
-            <div className={styles.featureChecklist}>
+          <div className={styles.pricingCard}>
+            <div className={styles.priceDisplay}>
+              <span className={styles.priceAmount}>{price.formatted}</span>
+              <span className={styles.pricePeriod}>{price.period}</span>
+            </div>
+            <p className={styles.priceDescription}>
+              Everything your gym needs, all in one place
+            </p>
+
+            <ul className={styles.priceFeatures}>
               {FEATURES.map((feature) => (
-                <label key={feature.key} className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={selectedFeatures.includes(feature.key)}
-                    onChange={() => toggleFeature(feature.key)}
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.featureCheckboxName}>
-                    {feature.icon} {feature.name}
-                  </span>
-                  <span className={styles.featurePrice}>£10/mo</span>
-                </label>
+                <li key={feature.key} className={styles.priceFeatureItem}>
+                  <svg className={styles.checkIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  {feature.name}
+                </li>
               ))}
-            </div>
-            <div className={styles.totalCost}>
-              <span className={styles.totalLabel}>Your monthly cost:</span>
-              <span className={styles.totalAmount}>£{totalCost}</span>
-            </div>
+            </ul>
+
+            <Link to="/signup" className={styles.pricingCta}>
+              Get Started
+            </Link>
+            <p className={styles.pricingNote}>No contracts. Cancel anytime.</p>
           </div>
         </div>
       </section>

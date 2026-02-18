@@ -50,7 +50,7 @@ const PlatformSignup = () => {
     <div className={styles.authPage}>
       <div className={styles.authCard}>
         <h1 className={styles.authTitle}>Create your account</h1>
-        <p className={styles.authSubtitle}>Start your gym website in minutes.</p>
+        <p className={styles.authSubtitle}>Get your gym online in minutes.</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <div className={styles.error}>{error}</div>}
