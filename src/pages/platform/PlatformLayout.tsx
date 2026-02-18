@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
+import Logo from '../../components/common/Logo';
 import styles from './PlatformLayout.module.scss';
 
 interface PlatformLayoutProps {
@@ -16,31 +17,19 @@ const PlatformLayout = ({ children }: PlatformLayoutProps) => {
       <nav className={styles.navbar}>
         <div className={styles.navContainer}>
           <Link to="/" className={styles.logo}>
-            <span className={styles.logoIcon}>🏋️</span>
-            <span className={styles.logoText}>No Sweat</span>
+            <Logo className={styles.logoMark} />
           </Link>
 
           <div className={styles.navLinks}>
-            {!isHomePage && (
-              <>
-                <Link to="/login" className={styles.navLink}>
-                  Log in
-                </Link>
-                <Link to="/signup" className={styles.navLinkPrimary}>
-                  Sign up
-                </Link>
-              </>
-            )}
-            {isHomePage && (
-              <>
-                <Link to="/login" className={styles.navLink}>
-                  Log in
-                </Link>
-                <Link to="/signup" className={styles.navLinkPrimary}>
-                  Get Started
-                </Link>
-              </>
-            )}
+            <Link to="/guide" className={styles.navLink}>
+              Features
+            </Link>
+            <Link to="/login" className={styles.navLink}>
+              Log in
+            </Link>
+            <Link to="/signup" className={styles.navLinkPrimary}>
+              {isHomePage ? 'Get Started' : 'Sign up'}
+            </Link>
           </div>
         </div>
       </nav>
@@ -53,16 +42,16 @@ const PlatformLayout = ({ children }: PlatformLayoutProps) => {
         <div className={styles.footerContainer}>
           <div className={styles.footerContent}>
             <div className={styles.footerBrand}>
-              <span className={styles.footerLogo}>🏋️ No Sweat</span>
+              <Logo className={styles.footerLogoMark} />
               <p className={styles.footerTagline}>
-                The all-in-one platform for gyms & fitness studios
+                Everything your gym needs, in one place
               </p>
             </div>
 
             <div className={styles.footerLinks}>
               <div className={styles.footerColumn}>
                 <h4 className={styles.footerColumnTitle}>Product</h4>
-                <Link to="/" className={styles.footerLink}>
+                <Link to="/guide" className={styles.footerLink}>
                   Features
                 </Link>
                 <Link to="/" className={styles.footerLink}>
@@ -84,7 +73,7 @@ const PlatformLayout = ({ children }: PlatformLayoutProps) => {
 
           <div className={styles.footerBottom}>
             <p className={styles.footerCopyright}>
-              © {new Date().getFullYear()} No Sweat. All rights reserved.
+              © {new Date().getFullYear()} No Sweat Fitness. All rights reserved.
             </p>
           </div>
         </div>

@@ -1,0 +1,19 @@
+.divider {
+  height: 1px;
+  background: var(--glass-border);
+  margin: var(--space-6) 0;
+}
+
+.gradient {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--glass-border-bright) 20%,
+    var(--glass-border-bright) 80%,
+    transparent 100%
+  );
+}
+
+.glow {
+  box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.1);
+}

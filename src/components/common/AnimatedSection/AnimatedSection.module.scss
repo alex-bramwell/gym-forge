@@ -1,0 +1,34 @@
+@use '../../../styles/animations';
+
+.animated {
+  opacity: 0;
+}
+
+.animated.visible {
+  &.fadeInUp {
+    animation: fadeInUp var(--duration-entrance) var(--ease-out-expo) forwards;
+    animation-delay: var(--animation-delay, 0ms);
+  }
+
+  &.fadeInScale {
+    animation: fadeInScale var(--duration-entrance) var(--ease-out-expo) forwards;
+    animation-delay: var(--animation-delay, 0ms);
+  }
+
+  &.slideInRight {
+    animation: slideInRight var(--duration-entrance) var(--ease-out-expo) forwards;
+    animation-delay: var(--animation-delay, 0ms);
+  }
+}
+
+// Staggered children — each child animates sequentially
+.animated.stagger.visible > * {
+  opacity: 0;
+  animation: fadeInUp var(--duration-entrance) var(--ease-out-expo) forwards;
+
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: calc(var(--animation-delay, 0ms) + #{$i * 80}ms);
+    }
+  }
+}
