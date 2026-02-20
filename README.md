@@ -574,6 +574,17 @@ npm run preview  # Preview locally
 
 ## Testing
 
+### Test Account
+
+A shared test account is available for QA on both local and production environments:
+
+| Field | Value |
+|-------|-------|
+| **Email** | `test@nosweattest.com` |
+| **Password** | `testtest123` |
+
+Use the `/test-reset` page to wipe the test account's gym data and re-run the onboarding flow.
+
 ### Checklist
 
 - [ ] Marketing site: homepage, guide page, login, signup load correctly
