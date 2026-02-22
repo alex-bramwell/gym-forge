@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, type ReactElement } from 'react';
+import { useEffect, useRef, useState, useCallback, type JSX } from 'react';
 import {
   DOCS_SECTIONS,
   DOCS_NAV_ITEMS,
@@ -8,7 +8,7 @@ import { ILLUSTRATIONS } from '../../components/guide/GuideIllustrations';
 import styles from './Docs.module.scss';
 
 /* ── Callout icon SVGs ── */
-const CALLOUT_ICONS: Record<CalloutType, ReactElement> = {
+const CALLOUT_ICONS: Record<CalloutType, JSX.Element> = {
   tip: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2v1M12 21v1M4.22 4.22l.7.7M18.36 18.36l.7.7M1 12h1M21 12h1M4.22 19.78l.7-.7M18.36 5.64l.7-.7" />

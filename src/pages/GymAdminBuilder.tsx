@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useTenant, useGymPath, useFeature } from '../contexts/TenantContext';
+import { useTenant, useFeature } from '../contexts/TenantContext';
 import { ViewAsProvider } from '../contexts/ViewAsContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -18,7 +18,6 @@ type ViewRole = 'admin' | 'coach' | 'member' | 'public';
 const GymAdminBuilder: React.FC = () => {
   const { user } = useAuth();
   const { gym } = useTenant();
-  const gymPath = useGymPath();
   const hasClassBooking = useFeature('class_booking');
   const hasCoachProfiles = useFeature('coach_profiles');
 
