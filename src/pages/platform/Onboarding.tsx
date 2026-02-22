@@ -37,7 +37,7 @@ const Onboarding = () => {
   const [city, setCity] = useState('');
   const [postcode, setPostcode] = useState('');
   const [country, setCountry] = useState('GB');
-  const [timezone, setTimezone] = useState(
+  const [timezone] = useState(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London'
   );
 
