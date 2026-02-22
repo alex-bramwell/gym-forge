@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, type JSX } from 'react';
 import {
   DOCS_SECTIONS,
   DOCS_NAV_ITEMS,

@@ -44,7 +44,6 @@ const PlatformLayout = ({ children }: PlatformLayoutProps) => {
   const isHomePage = location.pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string | null>(null);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -57,18 +56,12 @@ const PlatformLayout = ({ children }: PlatformLayoutProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setIsLoggedIn(true);
-        setUserName(user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || null);
       }
     };
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
-      if (session?.user) {
-        setUserName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || null);
-      } else {
-        setUserName(null);
-      }
     });
 
     return () => subscription.unsubscribe();
@@ -77,7 +70,6 @@ const PlatformLayout = ({ children }: PlatformLayoutProps) => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsLoggedIn(false);
-    setUserName(null);
     navigate('/');
   };
 
