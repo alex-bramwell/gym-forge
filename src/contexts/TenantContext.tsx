@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type {
   Gym,
@@ -120,16 +121,16 @@ export const useFeature = (featureKey: FeatureKey): boolean => {
 // -------------------------------------------------------------------
 // Slug resolution
 // -------------------------------------------------------------------
-function resolveSlugFromUrl(): string | null {
+function resolveSlugFromLocation(pathname: string, search: string): string | null {
   // 1. Check query parameter (development convenience): ?tenant=comet
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(search);
   const tenantParam = urlParams.get('tenant');
   if (tenantParam) {
     return tenantParam;
   }
 
   // 2. Check path-based routing: /gym/:slug
-  const pathMatch = window.location.pathname.match(/^\/gym\/([^/]+)/);
+  const pathMatch = pathname.match(/^\/gym\/([^/]+)/);
   if (pathMatch) {
     return pathMatch[1];
   }
@@ -160,6 +161,7 @@ interface TenantProviderProps {
 }
 
 export const TenantProvider: React.FC<TenantProviderProps> = ({ children, initialSlug }) => {
+  const location = useLocation();
   const [gym, setGym] = useState<Gym | null>(null);
   const [branding, setBranding] = useState<GymBranding>(DEFAULT_BRANDING);
   const [features, setFeatures] = useState<Record<FeatureKey, boolean>>(
@@ -172,7 +174,7 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children, initia
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const tenantSlug = initialSlug !== undefined ? initialSlug : resolveSlugFromUrl();
+  const tenantSlug = initialSlug !== undefined ? initialSlug : resolveSlugFromLocation(location.pathname, location.search);
   const isPlatformSite = tenantSlug === null;
 
   const fetchTenantData = async () => {
