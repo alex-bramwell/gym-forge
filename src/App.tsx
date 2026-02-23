@@ -256,8 +256,8 @@ function PlatformShell() {
 
 function App() {
   return (
-    <TenantProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <TenantProvider>
         <Routes>
           {/* Gym routes — path-based tenancy */}
           <Route path="/gym/:slug/*" element={
@@ -271,8 +271,8 @@ function App() {
           {/* Platform routes — the SaaS company site */}
           <Route path="/*" element={<PlatformShell />} />
         </Routes>
-      </BrowserRouter>
-    </TenantProvider>
+      </TenantProvider>
+    </BrowserRouter>
   );
 }
 
